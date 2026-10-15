@@ -1,1 +1,2482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Logística da Fórmula 1 — TCC</title>
+<link rel="icon" href="assets/triup-web.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F131B;
+    --bg-panel: #171C26;
+    --bg-panel-2: #1D2330;
+    --paper: #ECE6D6;
+    --paper-2: #E3DCC7;
+    --ink: #1B1F27;
+    --text: #EBE7DC;
+    --muted: #8E96AC;
+    --accent: #FF5A24;
+    --accent-2: #37D39A;
+    --line: rgba(235,231,220,0.14);
+    --line-strong: rgba(235,231,220,0.28);
+  }
 
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent); color:#0F131B;}
+
+  h1,h2,h3,.display{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    font-weight:600;
+    line-height:1.05;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* ---------- Ticker / nav bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(15,19,27,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1120px; margin:0 auto; padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{
+    font-family:'Oswald',sans-serif; text-transform:uppercase;
+    font-weight:700; font-size:0.92rem; letter-spacing:0.08em;
+    display:flex; align-items:center; gap:12px;
+  }
+  .brand .dot{width:8px;height:8px;background:var(--accent);border-radius:50%; flex:none;}
+  .brand-badge{
+    width:32px; height:32px; flex:none;
+    background:var(--paper); border-radius:7px;
+    display:flex; align-items:center; justify-content:center;
+    padding:4px;
+  }
+  .brand-badge img{width:100%; height:100%; object-fit:contain; display:block;}
+  .brand-badge.lg{width:58px; height:58px; border-radius:10px; padding:7px;}
+  .brand-name{display:flex; flex-direction:column; line-height:1.15;}
+  .brand-name .sep{font-family:'IBM Plex Mono',monospace; text-transform:none; font-weight:400; font-size:0.6rem; letter-spacing:0.1em; color:var(--muted); margin-top:2px;}
+  .navlinks{display:flex; gap:15px; flex-wrap:wrap; font-family:'IBM Plex Mono',monospace; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase;}
+  .navlinks a{color:var(--muted); text-decoration:none; transition:color .2s;}
+  .navlinks a:hover{color:var(--text);}
+  @media(max-width:720px){ .navlinks{display:none;} }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    padding:120px 0 90px;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image: radial-gradient(ellipse at 30% 20%, black 0%, transparent 70%);
+    opacity:0.5;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:22px; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:26px; height:1px; background:var(--accent); display:inline-block;}
+  .hero h1{
+    position:relative; z-index:1;
+    font-size:clamp(2.4rem, 6vw, 4.6rem);
+    max-width:900px;
+  }
+  .hero h1 .accent{color:var(--accent);}
+  .hero p.lead{
+    position:relative; z-index:1;
+    max-width:620px; margin-top:26px;
+    color:var(--muted); font-size:1.06rem;
+  }
+
+  /* route tracker signature */
+  .route-track{
+    position:relative; z-index:1;
+    margin-top:64px;
+    border:1px solid var(--line-strong);
+    background:var(--bg-panel);
+    border-radius:4px;
+    padding:22px 26px 26px;
+  }
+  .route-track-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:18px; flex-wrap:wrap; gap:8px;
+  }
+  .route-track-head b{color:var(--accent-2); font-weight:600;}
+  .route-line{
+    position:relative;
+    height:2px;
+    background:repeating-linear-gradient(90deg, var(--line-strong) 0 8px, transparent 8px 14px);
+    margin:34px 6px 30px;
+  }
+  .route-stop{
+    position:absolute; top:50%; transform:translate(-50%,-50%);
+    width:11px; height:11px; border-radius:50%;
+    background:var(--bg-panel); border:2px solid var(--muted);
+  }
+  .route-stop.active{border-color:var(--accent); background:var(--accent);}
+  .route-stop .lbl{
+    position:absolute; top:16px; left:50%; transform:translateX(-50%);
+    font-family:'IBM Plex Mono',monospace; font-size:0.62rem; color:var(--muted);
+    white-space:nowrap; letter-spacing:0.04em;
+  }
+  .route-vehicle{
+    position:absolute; top:50%; left:0;
+    transform:translate(-50%,-50%) scaleX(-1);
+    font-size:1.1rem;
+    animation:travel 9s linear infinite;
+  }
+  @keyframes travel{
+    0%{left:2%;}
+    100%{left:98%;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .route-vehicle{animation:none; left:50%;}
+  }
+
+  .hero-stats{
+    position:relative; z-index:1;
+    display:grid; grid-template-columns:repeat(6,1fr);
+    gap:1px; margin-top:2px;
+    background:var(--line);
+    border:1px solid var(--line-strong);
+    border-top:none;
+  }
+  .hero-stats div{background:var(--bg-panel); padding:18px 18px;}
+  .hero-stats .num{font-family:'Oswald',sans-serif; font-size:1.7rem; font-weight:600; color:var(--accent-2);}
+  .hero-stats .lbl{font-family:'IBM Plex Mono',monospace; font-size:0.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;}
+  @media(max-width:900px){ .hero-stats{grid-template-columns:repeat(3,1fr);} }
+  @media(max-width:500px){ .hero-stats{grid-template-columns:repeat(2,1fr);} }
+
+  /* ---------- Section shell ---------- */
+  section.block{padding:96px 0; border-bottom:1px solid var(--line);}
+  .section-head{
+    display:flex; gap:24px; align-items:flex-end; justify-content:space-between;
+    margin-bottom:48px; flex-wrap:wrap;
+  }
+  .section-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--accent);
+    text-transform:uppercase; letter-spacing:0.12em; margin-bottom:10px; display:block;
+  }
+  .section-head h2{font-size:clamp(1.7rem,3.6vw,2.5rem); max-width:640px;}
+  .section-head .sub{color:var(--muted); max-width:340px; font-size:0.94rem;}
+
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ---------- Paper cards ---------- */
+  .cards{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media(max-width:900px){.cards{grid-template-columns:1fr;}}
+  .card{
+    background:var(--paper); color:var(--ink);
+    border-radius:2px; padding:26px 24px;
+    position:relative;
+    box-shadow:0 18px 40px -24px rgba(0,0,0,0.6);
+  }
+  .card .tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.66rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:#7A5A3E; margin-bottom:12px; display:block;
+  }
+  .card h3{font-family:'Oswald',sans-serif; font-size:1.15rem; text-transform:none; letter-spacing:0; margin-bottom:10px; font-weight:600;}
+  .card p{font-size:0.92rem; color:#3A3F4A;}
+  .card::after{
+    content:"";
+    position:absolute; top:18px; right:18px;
+    width:26px; height:26px;
+    border:1.5px solid var(--accent);
+    border-radius:50%;
+    opacity:0.7;
+  }
+
+  /* ---------- Tabs (flyaway sea/air) ---------- */
+  .tabs{display:flex; gap:0; border:1px solid var(--line-strong); border-radius:4px 4px 0 0; overflow:hidden; margin-bottom:0;}
+  .tab-btn{
+    flex:1; padding:16px 18px; text-align:left;
+    background:var(--bg-panel); border:none; color:var(--muted);
+    cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:0.76rem;
+    letter-spacing:0.05em; text-transform:uppercase;
+    border-right:1px solid var(--line-strong);
+    transition:background .2s, color .2s;
+  }
+  .tab-btn:last-child{border-right:none;}
+  .tab-btn b{display:block; font-family:'Oswald',sans-serif; font-size:1.05rem; text-transform:uppercase; letter-spacing:0.02em; color:var(--text); margin-top:4px;}
+  .tab-btn.active{background:var(--bg-panel-2); color:var(--accent);}
+  .tab-btn.active b{color:var(--text);}
+  .tab-panels{
+    border:1px solid var(--line-strong); border-top:none;
+    background:var(--bg-panel); border-radius:0 0 4px 4px;
+    padding:36px;
+  }
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block; animation:fadein .4s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  .tab-panel h4{font-family:'Oswald',sans-serif; font-size:1.3rem; margin-bottom:6px; color:var(--accent-2);}
+  .tab-panel .tp-sub{color:var(--muted); font-size:0.88rem; margin-bottom:22px;}
+  .tp-list{display:grid; gap:16px;}
+  .tp-item{
+    display:grid; grid-template-columns:34px 1fr; gap:14px;
+    padding-bottom:16px; border-bottom:1px dashed var(--line);
+  }
+  .tp-item:last-child{border-bottom:none; padding-bottom:0;}
+  .tp-item .ic{font-size:1.3rem; line-height:1;}
+  .tp-item h5{font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:0.98rem; margin-bottom:4px;}
+  .tp-item p{color:var(--muted); font-size:0.9rem;}
+
+  /* ---------- Timeline ---------- */
+  .timeline{position:relative; margin-top:10px; padding-left:2px;}
+  .timeline::before{
+    content:""; position:absolute; left:74px; top:6px; bottom:6px; width:1px;
+    background:var(--line-strong);
+  }
+  @media(max-width:640px){ .timeline::before{left:20px;} }
+  .t-row{
+    position:relative; display:grid; grid-template-columns:74px 1fr; gap:26px;
+    padding:26px 0;
+  }
+  @media(max-width:640px){ .t-row{grid-template-columns:20px 1fr; gap:16px;} }
+  .t-row .day{
+    font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.05em; padding-top:3px;
+  }
+  @media(max-width:640px){ .t-row .day{display:none;} }
+  .t-dot{
+    position:absolute; left:69px; top:30px;
+    width:11px; height:11px; border-radius:50%;
+    background:var(--bg); border:2px solid var(--accent);
+  }
+  @media(max-width:640px){ .t-dot{left:15px;} }
+  .t-content .step-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--accent);
+    text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; display:block;
+  }
+  .t-content h4{font-family:'Oswald',sans-serif; font-size:1.15rem; margin-bottom:8px; text-transform:none; font-weight:600;}
+  .t-content p{color:var(--muted); font-size:0.92rem; max-width:600px;}
+
+  /* ---------- Photo blocks ---------- */
+  .photo{
+    position:relative; overflow:hidden; border-radius:4px;
+    border:1px solid var(--line-strong);
+    background:var(--bg-panel);
+  }
+  .photo img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:grayscale(30%) contrast(1.08) brightness(0.82) saturate(0.9);
+    transform:scale(1.01);
+  }
+  .photo::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(15,19,27,0) 45%, rgba(15,19,27,0.92) 100%),
+      linear-gradient(100deg, rgba(255,90,36,0.16), rgba(55,211,154,0.10));
+  }
+  .photo .cap{
+    position:absolute; left:20px; bottom:16px; right:20px; z-index:1;
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem;
+    color:var(--text); letter-spacing:0.04em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .photo .cap .idx{color:var(--accent-2); font-weight:600;}
+  .photo-wide{height:280px; margin-top:40px;}
+  .photo-tab{height:190px; margin-bottom:26px;}
+  @media(max-width:640px){ .photo-wide{height:200px;} }
+
+  /* ---------- Mini-mapa animado (transição de rota) ---------- */
+  .trail-stage{ position:relative; }
+  .map-overlay{
+    position:absolute; inset:0; z-index:6;
+    background:var(--bg-panel);
+    display:none; align-items:center; justify-content:center; flex-direction:column; gap:16px;
+    padding:20px;
+  }
+  .map-overlay.show{display:flex;}
+  .map-canvas{
+    position:relative; width:100%; max-width:560px; height:190px;
+    border-radius:6px; overflow:hidden; border:1px solid var(--line-strong);
+    background:
+      radial-gradient(ellipse 140px 90px at 15% 20%, rgba(55,211,154,0.14), transparent 70%),
+      radial-gradient(ellipse 160px 100px at 85% 80%, rgba(55,211,154,0.10), transparent 70%),
+      radial-gradient(ellipse 120px 80px at 60% 15%, rgba(255,90,36,0.08), transparent 70%),
+      var(--bg);
+  }
+  .map-canvas::before{
+    content:"";
+    position:absolute; inset:-30px -30px -30px -30px;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    background-position:0 0;
+    opacity:0.35;
+  }
+  .map-canvas.animate::before{ animation:gridScroll 3.1s linear forwards; }
+  @keyframes gridScroll{ from{background-position:0 0;} to{background-position:-168px 6px;} }
+
+  .map-road{
+    position:absolute; left:8%; right:8%; top:50%; height:10px; transform:translateY(-50%);
+    background:#2A3040; border-radius:2px; z-index:1;
+  }
+  .map-road::after{
+    content:"";
+    position:absolute; left:0; right:0; top:50%; height:2px; transform:translateY(-50%);
+    background:repeating-linear-gradient(90deg, rgba(235,231,220,0.55) 0 10px, transparent 10px 20px);
+  }
+  .map-trail{
+    position:absolute; left:8%; top:50%; height:4px; width:0%; transform:translateY(-50%);
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius:2px; z-index:2;
+  }
+  .map-trail.animate{ animation:trailGrow 1.6s cubic-bezier(.45,.05,.55,.95) forwards; }
+  @keyframes trailGrow{ from{width:0%;} to{width:52%;} }
+
+  .map-marker{
+    position:absolute; top:50%; transform:translate(-50%,-50%);
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    font-size:1.5rem; z-index:2;
+  }
+  .map-marker span{
+    font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.04em; white-space:nowrap;
+  }
+  .map-marker.start{left:8%;}
+  .map-marker.end{left:92%;}
+
+  .map-truck{
+    position:absolute; top:50%; left:8%;
+    transform:translate(-50%,-50%) scaleX(-1);
+    font-size:1.5rem; z-index:3; opacity:1;
+  }
+  .map-truck.moving{ animation:mapDrive 1.6s cubic-bezier(.45,.05,.55,.95) forwards; }
+  .map-truck.arrived{ animation:truckFade .3s ease forwards; }
+  @keyframes mapDrive{
+    0%{ left:8%; transform:translate(-50%,-70%) scaleX(-1); }
+    25%{ transform:translate(-50%,-30%) scaleX(-1); }
+    50%{ transform:translate(-50%,-65%) scaleX(-1); }
+    75%{ transform:translate(-50%,-40%) scaleX(-1); }
+    100%{ left:60%; transform:translate(-50%,-50%) scaleX(-1); }
+  }
+  @keyframes truckFade{ to{ opacity:0; transform:translate(-50%,-50%) scaleX(-1) scale(0.7); } }
+
+  .map-plane, .map-boat{
+    position:absolute; top:50%; left:60%;
+    transform:translate(-50%,-50%) scale(0.7);
+    font-size:1.6rem; z-index:4; opacity:0;
+  }
+  .map-plane.depart{ animation:planeDepart 1.3s cubic-bezier(.3,.2,.4,1) forwards; }
+  @keyframes planeDepart{
+    0%{ left:60%; top:50%; opacity:0; transform:translate(-50%,-50%) scale(0.7) rotate(-6deg); }
+    14%{ opacity:1; }
+    100%{ left:104%; top:-25%; opacity:0; transform:translate(-50%,-50%) scale(1.05) rotate(-30deg); }
+  }
+  .map-boat.depart{ animation:boatDepart 1.3s ease-in forwards; }
+  @keyframes boatDepart{
+    0%{ left:60%; opacity:0; transform:translate(-50%,-50%) scale(0.85) translateY(0); }
+    14%{ opacity:1; }
+    50%{ transform:translate(-50%,-50%) scale(0.9) translateY(-4px); }
+    80%{ transform:translate(-50%,-50%) scale(0.95) translateY(2px); }
+    100%{ left:107%; opacity:0; transform:translate(-50%,-50%) scale(1) translateY(0); }
+  }
+
+  .map-caption{
+    font-family:'IBM Plex Mono',monospace; font-size:0.76rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.06em; text-align:center;
+    transition:opacity .15s;
+  }
+  .map-caption b{color:var(--accent-2);}
+  @media (prefers-reduced-motion: reduce){
+    .map-truck.moving, .map-plane.depart, .map-boat.depart, .map-trail.animate, .map-canvas.animate::before{ animation:none !important; }
+    .map-truck{ left:92% !important; }
+  }
+
+  /* ---------- Trilha da logística ---------- */
+  .trail-shell{
+    border:1px solid var(--line-strong); border-radius:6px;
+    background:var(--bg-panel); overflow:hidden;
+  }
+  .trail-hud{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    padding:18px 24px; border-bottom:1px solid var(--line-strong);
+    font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .trail-hud b{color:var(--text); font-size:0.95rem;}
+  .trail-hud .route-flag{font-size:1rem;}
+  .trail-progress{
+    position:relative; height:4px; background:var(--line);
+  }
+  .trail-progress-fill{
+    position:absolute; left:0; top:0; bottom:0; width:0%;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition:width .35s ease;
+  }
+  .trail-dots{
+    display:flex; gap:5px; padding:16px 24px 0; flex-wrap:wrap;
+  }
+  .trail-dot{
+    width:9px; height:9px; border-radius:50%; background:var(--line-strong); flex:none;
+    transition:background .2s, transform .2s;
+  }
+  .trail-dot.done{background:var(--accent-2);}
+  .trail-dot.current{background:var(--accent); transform:scale(1.35);}
+  .trail-stage{
+    min-height:260px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:36px 24px 40px; text-align:center; gap:24px;
+  }
+  .trail-card{
+    background:var(--paper); color:var(--ink);
+    border-radius:6px; padding:26px 34px; max-width:460px;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    box-shadow:0 18px 40px -20px rgba(0,0,0,0.6);
+    animation:crateIn .3s ease;
+  }
+  .trail-card .icon{font-size:2.4rem; line-height:1;}
+  .trail-card .title{font-family:'Oswald',sans-serif; font-size:1.1rem; text-transform:uppercase; letter-spacing:0.02em;}
+  .trail-card .desc{font-size:0.9rem; color:#3A3F4A;}
+  .trail-card .day-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.66rem; letter-spacing:0.06em;
+    text-transform:uppercase; color:#B34A1E; margin-top:2px;
+  }
+  .trail-actions{display:flex; gap:16px; flex-wrap:wrap; justify-content:center;}
+  .trail-end{
+    display:flex; flex-direction:column; align-items:center; gap:14px; text-align:center; max-width:480px;
+  }
+  .trail-end .result-icon{font-size:2.6rem;}
+  .trail-end .result-title{font-family:'Oswald',sans-serif; font-size:1.4rem; text-transform:uppercase;}
+  .trail-end.ok .result-title{color:var(--accent-2);}
+  .trail-end.fail .result-title{color:var(--accent);}
+  .trail-end p{color:var(--muted); font-size:0.92rem;}
+
+  /* ---------- Mini-game: Despachante por um dia ---------- */
+  .game-shell{
+    border:1px solid var(--line-strong); border-radius:6px;
+    background:var(--bg-panel); overflow:hidden;
+  }
+  .game-hud{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    padding:18px 24px; border-bottom:1px solid var(--line-strong);
+    font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .game-hud b{color:var(--text); font-size:0.95rem;}
+  .game-hud .hud-item{display:flex; align-items:center; gap:8px;}
+  .game-hud .hearts{color:var(--accent); letter-spacing:2px;}
+  .game-stage{
+    min-height:280px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:40px 24px; text-align:center; gap:22px; position:relative;
+  }
+  .game-crate{
+    background:var(--paper); color:var(--ink);
+    border-radius:6px; padding:28px 40px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    box-shadow:0 18px 40px -20px rgba(0,0,0,0.6);
+    animation:crateIn .3s ease;
+  }
+  @keyframes crateIn{from{opacity:0; transform:translateY(10px) scale(0.96);} to{opacity:1; transform:translateY(0) scale(1);}}
+  .game-crate .icon{font-size:2.6rem; line-height:1;}
+  .game-crate .name{font-family:'Oswald',sans-serif; font-size:1.15rem; text-transform:uppercase; letter-spacing:0.02em;}
+  .game-choices{display:flex; gap:16px; flex-wrap:wrap; justify-content:center;}
+  .game-btn{
+    font-family:'IBM Plex Mono',monospace; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;
+    padding:16px 28px; border-radius:4px; border:1.5px solid var(--line-strong);
+    background:var(--bg-panel-2); color:var(--text); cursor:pointer;
+    display:flex; align-items:center; gap:10px; transition:border-color .15s, transform .15s;
+  }
+  .game-btn:hover{border-color:var(--accent); transform:translateY(-2px);}
+  .game-btn .em{font-size:1.3rem;}
+  .game-feedback{
+    position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    font-family:'IBM Plex Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em;
+    padding:6px 14px; border-radius:20px; opacity:0; transition:opacity .2s;
+  }
+  .game-feedback.show{opacity:1;}
+  .game-feedback.ok{background:rgba(55,211,154,0.16); color:var(--accent-2);}
+  .game-feedback.bad{background:rgba(255,90,36,0.16); color:var(--accent);}
+  .game-start, .game-over{
+    display:flex; flex-direction:column; align-items:center; gap:18px; text-align:center;
+  }
+  .game-over .score-big{font-family:'Oswald',sans-serif; font-size:3rem; color:var(--accent-2);}
+  .game-over .score-lbl{font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em;}
+  .game-over .best{font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--muted); margin-top:-6px;}
+  .hidden{display:none !important;}
+
+  /* ---------- Vídeo de abertura ---------- */
+  .video-block{
+    position:relative; border:1px solid var(--line-strong); border-radius:6px;
+    overflow:hidden; background:#000;
+  }
+  .video-block video{width:100%; display:block; max-height:560px; object-fit:cover;}
+  .video-block .cap{
+    position:absolute; left:20px; bottom:16px; z-index:1;
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem;
+    color:var(--text); letter-spacing:0.04em;
+    display:flex; align-items:center; gap:8px;
+    background:rgba(15,19,27,0.55); padding:6px 10px; border-radius:3px;
+  }
+  .video-block .cap .idx{color:var(--accent-2); font-weight:600;}
+
+  /* ---------- Infográfico (lightbox) ---------- */
+  .infographic-block{
+    display:grid; grid-template-columns:1fr 1.15fr; gap:44px; align-items:center;
+  }
+  @media(max-width:860px){ .infographic-block{grid-template-columns:1fr;} }
+  .info-copy .section-tag{margin-bottom:10px;}
+  .info-copy h2{font-size:clamp(1.7rem,3.6vw,2.5rem); margin-bottom:16px;}
+  .info-copy p{color:var(--muted); font-size:0.96rem; max-width:440px; margin-bottom:22px;}
+  .info-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--accent); color:#12141A;
+    font-family:'IBM Plex Mono',monospace; font-size:0.76rem; text-transform:uppercase; letter-spacing:0.06em;
+    font-weight:600; padding:13px 22px; border-radius:3px; border:none; cursor:pointer;
+    transition:transform .2s, background .2s;
+  }
+  .info-btn:hover{background:var(--accent-2); transform:translateY(-2px);}
+  .info-frame{
+    position:relative; border:1px solid var(--line-strong); border-radius:6px;
+    overflow:hidden; background:var(--bg-panel); cursor:zoom-in;
+    max-height:560px;
+  }
+  .info-frame img{width:100%; display:block; object-fit:cover; object-position:top; max-height:560px;}
+  .info-frame::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(15,19,27,0) 55%, rgba(15,19,27,0.95) 100%);
+  }
+  .info-frame .zoom-hint{
+    position:absolute; left:20px; bottom:16px; z-index:1;
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--text);
+    display:flex; align-items:center; gap:8px; letter-spacing:0.04em;
+  }
+  .zoom-hint::before{content:"⤢"; color:var(--accent-2); font-size:0.9rem;}
+
+  .img-modal-overlay{
+    position:fixed; inset:0; z-index:320;
+    background:rgba(8,10,15,0.92);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:40px 20px; overflow-y:auto;
+  }
+  .img-modal-overlay.open{display:flex;}
+  .img-modal-inner{position:relative; max-width:720px; width:100%;}
+  .img-modal-inner img{width:100%; display:block; border-radius:6px; box-shadow:0 40px 90px -20px rgba(0,0,0,0.7);}
+  .img-modal-close{
+    position:fixed; top:24px; right:28px;
+    width:42px; height:42px; border-radius:50%;
+    border:1.5px solid var(--accent); background:rgba(15,19,27,0.8);
+    color:var(--text); font-size:1.3rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; z-index:1;
+  }
+  .img-modal-close:hover{background:var(--accent); color:#12141A;}
+
+  /* ---------- Comparativo de custo (mar x ar) ---------- */
+  .cost-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media(max-width:700px){ .cost-grid{grid-template-columns:1fr;} }
+  .cost-card{
+    border:1px solid var(--line-strong); border-radius:6px; background:var(--bg-panel); padding:26px 26px 24px;
+  }
+  .cost-card h4{font-family:'Oswald',sans-serif; font-size:1.1rem; text-transform:none; margin-bottom:4px;}
+  .cost-card .cost-sub{color:var(--muted); font-size:0.82rem; margin-bottom:18px;}
+  .cost-bar-row{margin-bottom:16px;}
+  .cost-bar-label{
+    display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace;
+    font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;
+  }
+  .cost-bar-track{height:10px; background:var(--line); border-radius:6px; overflow:hidden;}
+  .cost-bar-fill{height:100%; border-radius:6px;}
+  .cost-bar-fill.mar{background:var(--accent-2);}
+  .cost-bar-fill.ar{background:var(--accent);}
+  .cost-note{
+    margin-top:18px; padding-top:16px; border-top:1px dashed var(--line-strong);
+    font-size:0.82rem; color:var(--muted);
+  }
+
+  /* ---------- Calculadora de carbono ---------- */
+  .carbon-shell{
+    border:1px solid var(--line-strong); border-radius:6px; background:var(--bg-panel);
+    padding:28px 28px 26px;
+  }
+  .carbon-form{display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; margin-bottom:26px;}
+  .carbon-form label{
+    display:block; font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;
+  }
+  .carbon-form input{
+    background:var(--bg); border:1px solid var(--line-strong); color:var(--text);
+    padding:11px 14px; border-radius:4px; font-family:'IBM Plex Mono',monospace; font-size:0.9rem;
+    width:160px;
+  }
+  .carbon-results{display:grid; gap:14px;}
+  .carbon-row{
+    display:grid; grid-template-columns:140px 1fr 90px; align-items:center; gap:14px;
+  }
+  @media(max-width:560px){ .carbon-row{grid-template-columns:90px 1fr 70px; gap:8px;} }
+  .carbon-row .mode-lbl{font-family:'IBM Plex Mono',monospace; font-size:0.78rem;}
+  .carbon-bar-track{height:14px; background:var(--line); border-radius:8px; overflow:hidden;}
+  .carbon-bar-fill{height:100%; border-radius:8px; transition:width .4s ease;}
+  .carbon-row.mar .carbon-bar-fill{background:var(--accent-2);}
+  .carbon-row.truck .carbon-bar-fill{background:#8B93D9;}
+  .carbon-row.ar .carbon-bar-fill{background:var(--accent);}
+  .carbon-result-val{font-family:'IBM Plex Mono',monospace; font-size:0.85rem; text-align:right;}
+  .carbon-disclaimer{margin-top:18px; font-size:0.78rem; color:var(--muted); font-style:italic;}
+
+  /* ---------- Linha do tempo histórica / Glossário / Sobre o grupo ---------- */
+  .history-track{position:relative; padding-left:2px;}
+  .history-track::before{content:""; position:absolute; left:64px; top:6px; bottom:6px; width:1px; background:var(--line-strong);}
+  @media(max-width:600px){ .history-track::before{left:16px;} }
+  .history-row{position:relative; display:grid; grid-template-columns:64px 1fr; gap:22px; padding:22px 0;}
+  @media(max-width:600px){ .history-row{grid-template-columns:16px 1fr;} }
+  .history-row .era{font-family:'IBM Plex Mono',monospace; font-size:0.68rem; color:var(--muted); padding-top:2px;}
+  @media(max-width:600px){ .history-row .era{display:none;} }
+  .history-dot{position:absolute; left:59px; top:26px; width:11px; height:11px; border-radius:50%; background:var(--bg); border:2px solid var(--accent-2);}
+  @media(max-width:600px){ .history-dot{left:11px;} }
+  .history-row h4{font-family:'Oswald',sans-serif; font-size:1.05rem; text-transform:none; margin-bottom:6px;}
+  .history-row p{color:var(--muted); font-size:0.9rem; max-width:600px;}
+
+  .glossary-grid{display:flex; flex-wrap:wrap; gap:12px;}
+  .gloss-chip{
+    background:var(--bg-panel); border:1px solid var(--line-strong); color:var(--text);
+    padding:12px 18px; border-radius:24px; cursor:pointer; font-family:'IBM Plex Sans',sans-serif;
+    font-size:0.86rem; display:flex; align-items:center; gap:8px; transition:border-color .2s, transform .2s;
+  }
+  .gloss-chip:hover{border-color:var(--accent); transform:translateY(-2px);}
+  .gloss-chip .q{font-family:'IBM Plex Mono',monospace; color:var(--accent); font-size:0.75rem;}
+
+  .team-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px;}
+  .team-card{
+    background:var(--bg-panel); border:1px solid var(--line-strong); border-radius:6px;
+    padding:26px 20px; text-align:center;
+  }
+  .team-avatar{
+    width:56px; height:56px; border-radius:50%; margin:0 auto 14px;
+    background:linear-gradient(135deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Oswald',sans-serif; font-size:1.2rem; color:#12141A; font-weight:700;
+  }
+  .team-card .t-name{font-family:'Oswald',sans-serif; font-size:1rem; text-transform:none; margin-bottom:4px;}
+  .team-card .t-role{font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em;}
+  .team-card .t-desc{font-size:0.82rem; color:var(--muted); margin-top:12px; line-height:1.55;}
+
+  /* ---------- Recordes / Certificado ---------- */
+  .records-bar{
+    display:flex; gap:24px; flex-wrap:wrap; align-items:center;
+    background:var(--bg-panel); border:1px solid var(--line-strong); border-radius:6px;
+    padding:16px 22px; margin-bottom:32px; font-family:'IBM Plex Mono',monospace; font-size:0.8rem; color:var(--muted);
+  }
+  .records-bar b{color:var(--accent-2);}
+  .cert-overlay{
+    position:fixed; inset:0; z-index:330; background:rgba(8,10,15,0.88); backdrop-filter:blur(5px);
+    display:none; align-items:center; justify-content:center; padding:24px;
+  }
+  .cert-overlay.open{display:flex;}
+  .cert-box{
+    background:var(--paper); color:var(--ink); width:100%; max-width:560px; border-radius:8px;
+    padding:44px 40px; position:relative; text-align:center;
+    border:6px double #B34A1E;
+  }
+  .cert-box .cert-eyebrow{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:#B34A1E; margin-bottom:14px;}
+  .cert-box h3{font-family:'Oswald',sans-serif; font-size:1.7rem; text-transform:uppercase; margin-bottom:10px;}
+  .cert-box .cert-sub{color:#5A5F6B; font-size:0.9rem; margin-bottom:26px;}
+  .cert-stats{display:flex; justify-content:center; gap:30px; flex-wrap:wrap; margin-bottom:26px;}
+  .cert-stats div{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:#5A5F6B; text-transform:uppercase;}
+  .cert-stats b{display:block; font-family:'Oswald',sans-serif; font-size:1.4rem; color:#B34A1E; text-transform:none;}
+  .cert-box .cert-brand{font-family:'Oswald',sans-serif; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.06em; color:#1B1F27;}
+
+  /* ---------- Compartilhar seção ---------- */
+  .share-btn{
+    background:transparent; border:1px solid var(--line-strong); color:var(--muted);
+    width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:0.7rem;
+    display:inline-flex; align-items:center; justify-content:center; margin-left:10px;
+    transition:border-color .2s, color .2s; position:relative; top:-2px;
+  }
+  .share-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .share-toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--accent-2); color:#0F2A20; font-family:'IBM Plex Mono',monospace;
+    font-size:0.76rem; padding:10px 18px; border-radius:20px; z-index:400;
+    opacity:0; pointer-events:none; transition:opacity .25s, transform .25s;
+  }
+  .share-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* ---------- Toggle de animação / topbar utils ---------- */
+  .topbar-utils{display:flex; align-items:center; gap:10px;}
+  .motion-toggle{
+    background:transparent; border:1px solid var(--line-strong); color:var(--muted);
+    font-family:'IBM Plex Mono',monospace; font-size:0.66rem; text-transform:uppercase;
+    letter-spacing:0.04em; padding:7px 12px; border-radius:20px; cursor:pointer;
+    display:flex; align-items:center; gap:6px; transition:border-color .2s, color .2s;
+  }
+  .motion-toggle:hover{border-color:var(--accent); color:var(--text);}
+  .motion-toggle.active{border-color:var(--accent-2); color:var(--accent-2);}
+
+  body.reduced-motion *, body.reduced-motion *::before, body.reduced-motion *::after{
+    animation-duration:0.001s !important;
+    animation-delay:0s !important;
+    transition-duration:0.001s !important;
+  }
+  body.reduced-motion .reveal{ opacity:1 !important; transform:none !important; }
+
+  /* ---------- Modo impressão ---------- */
+  @media print{
+    .topbar, .navlinks, .video-block, .info-btn, .share-btn, .motion-toggle,
+    #jogo, #trilha, .game-shell, .trail-shell, .planner-overlay, .modal-overlay,
+    .img-modal-overlay, .cert-overlay, .zoom-hint, .route-track { display:none !important; }
+    body{ background:#fff !important; color:#111 !important; }
+    section.block{ border-bottom:1px solid #ccc !important; padding:24px 0 !important; }
+    .photo::after, .card::after{ display:none !important; }
+    .card, .ps-side, .tp-item, .t-content{ color:#111 !important; }
+    a{ color:#111 !important; }
+  }
+  body.printing-cert *{ visibility:hidden; }
+  body.printing-cert #cert-box, body.printing-cert #cert-box *{ visibility:visible; }
+  body.printing-cert #cert-box{ position:fixed; inset:0; margin:auto; }
+
+  /* ---------- Organizador de carga (planilha simplificada) ---------- */
+  .planner-overlay{
+    position:fixed; inset:0; z-index:320;
+    background:rgba(8,10,15,0.86); backdrop-filter:blur(5px);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:40px 18px; overflow-y:auto;
+  }
+  .planner-overlay.open{display:flex;}
+  .planner-box{
+    background:var(--paper); color:var(--ink);
+    width:100%; max-width:680px; border-radius:6px;
+    padding:34px 30px 30px; position:relative;
+    box-shadow:0 40px 90px -20px rgba(0,0,0,0.65);
+    animation:modalIn .28s ease;
+  }
+  .planner-box h3{font-family:'Oswald',sans-serif; text-transform:none; font-size:1.35rem; font-weight:600; margin-bottom:6px;}
+  .planner-box .planner-sub{color:#5A5F6B; font-size:0.88rem; margin-bottom:20px; max-width:520px;}
+  .planner-table{width:100%; border-collapse:collapse; font-size:0.86rem;}
+  .planner-table thead th{
+    text-align:left; font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+    text-transform:uppercase; letter-spacing:0.05em; color:#7A5A3E;
+    border-bottom:1.5px solid rgba(27,31,39,0.18); padding:0 8px 10px;
+  }
+  .planner-table td{ padding:10px 8px; border-bottom:1px solid rgba(27,31,39,0.08); vertical-align:middle; }
+  .planner-item{display:flex; align-items:center; gap:8px; font-weight:600;}
+  .planner-toggle{display:inline-flex; border:1px solid rgba(27,31,39,0.18); border-radius:20px; overflow:hidden;}
+  .planner-toggle button{
+    border:none; background:transparent; padding:5px 12px; cursor:pointer;
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.03em;
+    color:#5A5F6B;
+  }
+  .planner-toggle button.active.mar{background:var(--accent-2); color:#0F2A20;}
+  .planner-toggle button.active.ar{background:var(--accent); color:#2A1408;}
+  .planner-days{font-family:'IBM Plex Mono',monospace; font-weight:600;}
+  .planner-status{
+    font-family:'IBM Plex Mono',monospace; font-size:0.66rem; text-transform:uppercase;
+    letter-spacing:0.03em; padding:4px 9px; border-radius:12px; white-space:nowrap;
+  }
+  .planner-status.ok{background:rgba(55,211,154,0.16); color:#137355;}
+  .planner-status.late{background:rgba(255,90,36,0.16); color:#B34A1E;}
+  .planner-footer{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+    margin-top:18px; padding-top:16px; border-top:1px solid rgba(27,31,39,0.12);
+    font-family:'IBM Plex Mono',monospace; font-size:0.76rem; color:#5A5F6B;
+  }
+  .planner-footer b{color:var(--ink);}
+  @media(max-width:600px){
+    .planner-table thead{display:none;}
+    .planner-table, .planner-table tbody, .planner-table tr, .planner-table td{display:block; width:100%;}
+    .planner-table tr{border-bottom:1px solid rgba(27,31,39,0.12); padding:10px 0;}
+    .planner-table td{border:none; padding:4px 0; display:flex; justify-content:space-between; align-items:center;}
+    .planner-table td::before{content:attr(data-label); font-family:'IBM Plex Mono',monospace; font-size:0.62rem; text-transform:uppercase; color:#8A8F99;}
+  }
+
+  /* ---------- Modal (janela individual por item) ---------- */
+  .clickable{cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, background .2s ease;}
+  .clickable:hover{transform:translateY(-3px);}
+  .card.clickable:hover{box-shadow:0 20px 40px -18px rgba(0,0,0,0.55);}
+  .card.clickable::before{
+    content:"↗"; position:absolute; top:16px; right:18px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.85rem; color:var(--accent); opacity:0.6;
+  }
+  .tp-item.clickable:hover, .ps-side.clickable:hover{background:rgba(255,255,255,0.03);}
+  .tp-item.clickable, .ps-side.clickable{border-radius:4px; padding-left:8px; margin-left:-8px;}
+  .t-content.clickable:hover h4{color:var(--accent);}
+  .t-content.clickable{transition:color .2s;}
+
+  .modal-overlay{
+    position:fixed; inset:0; z-index:300;
+    background:rgba(10,12,18,0.82); backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; padding:24px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--paper); color:var(--ink);
+    width:100%; max-width:560px; max-height:82vh; overflow-y:auto;
+    border-radius:6px; padding:40px 38px 36px;
+    position:relative; box-shadow:0 40px 80px -24px rgba(0,0,0,0.65);
+    animation:modalIn .28s ease;
+  }
+  @keyframes modalIn{from{opacity:0; transform:translateY(16px) scale(0.98);} to{opacity:1; transform:translateY(0) scale(1);}}
+  .modal-close{
+    position:absolute; top:20px; right:20px;
+    width:34px; height:34px; border-radius:50%;
+    border:1.5px solid var(--accent); background:transparent;
+    color:var(--ink); font-size:1.2rem; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{background:var(--accent); color:var(--paper);}
+  .modal-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:#B34A1E; display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  }
+  .modal-box h3{
+    font-family:'Oswald',sans-serif; text-transform:none; letter-spacing:0;
+    font-size:1.5rem; font-weight:600; margin-bottom:16px; max-width:440px;
+  }
+  .modal-body p{color:#3A3F4A; font-size:0.96rem; margin-top:12px;}
+  .modal-body p:first-child{margin-top:0;}
+  .modal-body strong{color:var(--ink);}
+
+  /* ---------- Problema → Solução ---------- */
+  .ps-grid{display:flex; flex-direction:column; gap:16px;}
+  .ps-card{
+    display:grid; grid-template-columns:1fr 46px 1fr; align-items:stretch;
+    border:1px solid var(--line-strong); border-radius:4px; overflow:hidden;
+    background:var(--bg-panel);
+  }
+  @media(max-width:760px){
+    .ps-card{grid-template-columns:1fr; }
+  }
+  .ps-side{padding:26px 28px;}
+  .ps-problem{background:var(--bg-panel); border-right:1px solid var(--line-strong);}
+  @media(max-width:760px){ .ps-problem{border-right:none; border-bottom:1px solid var(--line-strong);} }
+  .ps-solution{background:var(--bg-panel-2);}
+  .ps-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:0.66rem; letter-spacing:0.1em;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px; margin-bottom:12px;
+  }
+  .ps-problem .ps-tag{color:var(--accent);}
+  .ps-solution .ps-tag{color:var(--accent-2);}
+  .ps-side h4{font-family:'Oswald',sans-serif; font-size:1.05rem; text-transform:none; font-weight:600; margin-bottom:8px; letter-spacing:0;}
+  .ps-side p{color:var(--muted); font-size:0.89rem;}
+  .ps-arrow{
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg); color:var(--muted); font-family:'IBM Plex Mono',monospace; font-size:1.1rem;
+  }
+  @media(max-width:760px){
+    .ps-arrow{padding:8px; writing-mode:horizontal-tb; transform:rotate(90deg); width:fit-content; margin:0 auto;}
+  }
+
+  /* ---------- Accordion (aprofundamento) ---------- */
+  .acc{border:1px solid var(--line-strong); border-radius:4px; overflow:hidden;}
+  .acc-item + .acc-item{border-top:1px solid var(--line-strong);}
+  .acc-head{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    gap:16px; padding:22px 26px; background:var(--bg-panel); border:none; cursor:pointer;
+    text-align:left; color:var(--text);
+  }
+  .acc-head:hover{background:var(--bg-panel-2);}
+  .acc-head .n{
+    font-family:'IBM Plex Mono',monospace; color:var(--accent); font-size:0.8rem; margin-right:14px;
+  }
+  .acc-head .t{font-family:'Oswald',sans-serif; font-size:1.08rem; text-transform:uppercase; letter-spacing:0.01em;}
+  .acc-head .plus{font-family:'IBM Plex Mono',monospace; color:var(--muted); font-size:1.1rem; transition:transform .3s;}
+  .acc-item.open .plus{transform:rotate(45deg); color:var(--accent);}
+  .acc-body{max-height:0; overflow:hidden; transition:max-height .4s ease; background:var(--bg);}
+  .acc-body-inner{padding:0 26px 28px 66px; color:var(--muted); font-size:0.94rem; max-width:680px;}
+  .acc-body-inner p + p{margin-top:12px;}
+  .acc-body-inner strong{color:var(--text); font-weight:600;}
+
+  /* ---------- Footer ---------- */
+  footer{padding:60px 0 50px;}
+  .foot-grid{display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; align-items:flex-start;}
+  footer .brand{margin-bottom:14px;}
+  footer .note{color:var(--muted); font-size:0.85rem; max-width:360px;}
+  footer .sources{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--muted); line-height:2;}
+  footer .sources b{display:block; color:var(--text); font-family:'IBM Plex Sans',sans-serif; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;}
+
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--bg-panel-2); border-radius:6px;}
+
+  a:focus-visible, button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-badge"><img src="assets/triup-web.png" alt="Logo do grupo TriUp"></span>
+      <span class="brand-name">TriUp<span class="sep">Logística&nbsp;F1</span></span>
+    </div>
+    <nav class="navlinks">
+      <a href="#video-intro">Vídeo</a>
+      <a href="#europa">Europa</a>
+      <a href="#flyaway">Flyaway</a>
+      <a href="#custo">Custo</a>
+      <a href="#cronograma">Cronograma</a>
+      <a href="#desafios">Desafios</a>
+      <a href="#carbono">Carbono</a>
+      <a href="#jogo">Jogo</a>
+      <a href="#trilha">Trilha</a>
+      <a href="#aprofundamento">Aprofundamento</a>
+      <a href="#historia">História</a>
+      <a href="#glossario">Glossário</a>
+    </nav>
+    <div class="topbar-utils">
+      <button class="motion-toggle" id="motion-toggle" onclick="toggleMotion()">🎬 Animações</button>
+      <button class="motion-toggle" onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow mono">Trabalho de Conclusão de Curso</span>
+    <h1>A Fórmula 1 não vive <br> só de corrida. <span class="accent">Vive de logística.</span></h1>
+    <p class="lead">A cada semana, uma cidade inteira — boxes, motorhomes, laboratórios de telemetria e os próprios carros — é desmontada, viaja milhares de quilômetros e é remontada do zero. Este trabalho mostra como essa operação funciona por terra, mar e ar.</p>
+    <p class="mono" style="font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-top:20px; display:flex; align-items:center; gap:10px;">
+      <span class="brand-badge" style="width:26px;height:26px;border-radius:5px;"><img src="assets/triup-web.png" alt="Logo do grupo TriUp"></span>
+      Apresentado pelo grupo <span style="color:var(--text); font-weight:600;">TriUp</span>
+    </p>
+
+    <div class="route-track">
+      <div class="route-track-head">
+        <span>Rota simulada de um fim de semana de corrida</span>
+        <span><b>● em movimento contínuo</b></span>
+      </div>
+      <div class="route-line">
+        <div class="route-stop active" style="left:2%"><span class="lbl">Autódromo A</span></div>
+        <div class="route-stop" style="left:34%"><span class="lbl">Aeroporto</span></div>
+        <div class="route-stop" style="left:66%"><span class="lbl">Alfândega</span></div>
+        <div class="route-stop active" style="left:98%"><span class="lbl">Autódromo B</span></div>
+        <div class="route-vehicle mono">🚚</div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div><div class="num">24</div><div class="lbl">Corridas na temporada</div></div>
+      <div><div class="num">~30</div><div class="lbl">Caminhões por equipe (Europa)</div></div>
+      <div><div class="num">6–7</div><div class="lbl">Boeing 747/777 cargueiros</div></div>
+      <div><div class="num">5</div><div class="lbl">Kits marítimos idênticos, o ano todo no mar</div></div>
+      <div><div class="num">5</div><div class="lbl">Continentes visitados por temporada</div></div>
+      <div><div class="num">~80</div><div class="lbl">Países cobertos pelo Carnê ATA</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap" id="video-intro" style="padding:56px 0 0; scroll-margin-top:80px;">
+  <div class="video-block reveal">
+    <video controls playsinline preload="metadata" poster="assets/img1-porto-aviao.jpg">
+      <source src="assets/video-intro.mp4" type="video/mp4">
+      Seu navegador não suporta vídeo HTML5.
+    </video>
+    <span class="cap"><span class="idx">VÍDEO</span> Resumo animado da operação logística</span>
+  </div>
+</div>
+
+<div class="wrap" style="padding:40px 0 0;">
+  <div class="photo reveal" style="height:420px; border-radius:6px;">
+    <img src="assets/img1-porto-aviao.jpg" alt="Porto, avião de carga e carro de corrida reunidos em uma cena de operação logística">
+    <span class="cap"><span class="idx">IMG.00</span> Terra, mar e ar operando ao mesmo tempo, no mesmo pátio</span>
+  </div>
+</div>
+
+<!-- ================= INFOGRÁFICO ================= -->
+<section class="block">
+  <div class="wrap infographic-block reveal">
+    <div class="info-copy">
+      <span class="section-tag">Resumo visual</span>
+      <h2>Toda a operação, em uma imagem só</h2>
+      <p>Um infográfico reunindo o fluxo logístico completo — do planejamento ao pós-corrida — junto com os modos de transporte, os números da operação e um mapa do que existe dentro do circuito.</p>
+      <button class="info-btn" onclick="openImageModal()">⤢ Ver infográfico completo</button>
+    </div>
+    <div class="info-frame" onclick="openImageModal()">
+      <img src="assets/infografico.jpg" alt="Infográfico completo sobre a logística da Fórmula 1">
+      <span class="zoom-hint">Clique para ampliar</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EUROPA ================= -->
+<section class="block" id="europa">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">01 — Logística terrestre</span>
+        <h2>Corridas na Europa<button class="share-btn" onclick="shareSection('europa')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Nas etapas europeias, tudo se move por rodovias — a parte mais controlada da operação, mas que exige uma frota gigantesca.</p>
+    </div>
+
+    <div class="cards reveal">
+      <div class="card clickable" onclick="openModal('frota-oficial')">
+        <span class="tag">Frota oficial</span>
+        <h3>Entre 20 e 30 caminhões por equipe</h3>
+        <p>Customizados para transportar não só os carros, mas também laboratórios de telemetria, peças de reposição e os motorhomes — as enormes estruturas de hospitalidade do paddock.</p>
+      </div>
+      <div class="card clickable" onclick="openModal('carga-sensivel')">
+        <span class="tag">Carga sensível</span>
+        <h3>Chassis nunca viajam montados</h3>
+        <p>Ficam em suportes especiais dentro de caminhões com controle de temperatura e suspensão a ar, evitando vibrações que poderiam microfraturar a fibra de carbono.</p>
+      </div>
+      <div class="card clickable" onclick="openModal('motoristas-revezamento')">
+        <span class="tag">Operação non-stop</span>
+        <h3>Motoristas em revezamento</h3>
+        <p>Para cumprir corridas em fins de semana seguidos (back-to-back), equipes de motoristas se revezam ao volante, respeitando as leis de descanso europeias sem parar a viagem.</p>
+      </div>
+    </div>
+
+    <div class="photo photo-wide reveal">
+      <img src="assets/img4-paddock.jpg" alt="Fileira de motorhomes e caminhões no paddock ao amanhecer">
+      <span class="cap"><span class="idx">IMG.01</span> Motorhomes e caminhões alinhados no paddock europeu</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FLYAWAY ================= -->
+<section class="block" id="flyaway">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">02 — Logística aérea e marítima</span>
+        <h2>Corridas "Flyaway"<button class="share-btn" onclick="shareSection('flyaway')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Fora da Europa — Américas, Ásia, Oriente Médio — a operação é coordenada centralmente pela F1 em parceria com a DHL, dividida pelo valor e urgência de cada item.</p>
+    </div>
+
+    <div class="reveal">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="mar">🚢 Rota 01<b>Marítima</b></button>
+        <button class="tab-btn" data-tab="ar">✈️ Rota 02<b>Aérea</b></button>
+      </div>
+      <div class="tab-panels">
+        <div class="tab-panel active" id="tab-mar">
+          <div class="photo photo-tab">
+            <img src="https://images.pexels.com/photos/1427107/pexels-photo-1427107.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Contêineres empilhados em porto visto do alto">
+            <span class="cap"><span class="idx">IMG.02</span> Contêineres marítimos aguardando embarque em porto</span>
+          </div>
+          <h4>Carga não crítica</h4>
+          <p class="tp-sub">Itens pesados, baratos ou duplicados — sem pressa, mas em grande volume.</p>
+          <div class="tp-list">
+            <div class="tp-item clickable" onclick="openModal('mar-o-que-vai')"><div class="ic">📦</div><div><h5>O que viaja de navio</h5><p>Cadeiras, mesas, equipamentos de cozinha, painéis de box e ferramentas básicas — tudo que não precisa chegar em horas.</p></div></div>
+            <div class="tp-item clickable" onclick="openModal('mar-5kits')"><div class="ic">🔁</div><div><h5>A estratégia dos 5 kits</h5><p>Para não pagar frete aéreo por toneladas de mobília, as equipes mantêm 5 kits marítimos idênticos circulando ao mesmo tempo: enquanto o Kit 1 está na Austrália, o Kit 2 já navega rumo a Miami, o Kit 3 segue para o Japão, e assim por diante.</p></div></div>
+            <div class="tp-item clickable" onclick="openModal('mar-ano-todo')"><div class="ic">🌊</div><div><h5>O ano inteiro no mar</h5><p>Esses contêineres praticamente não voltam à base: passam a temporada inteira navegando de porto em porto, sincronizados com o calendário.</p></div></div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-ar">
+          <div class="photo photo-tab">
+            <img src="assets/img3-cargueiro.jpg" alt="Carro de corrida sendo carregado no nariz de um avião cargueiro Boeing 747">
+            <span class="cap"><span class="idx">IMG.03</span> Carregamento pelo nariz articulado de um 747 cargueiro</span>
+          </div>
+          <h4>Carga crítica e carros</h4>
+          <p class="tp-sub">O que precisa estar na pista em poucos dias, viaja pelo ar.</p>
+          <div class="tp-list">
+            <div class="tp-item clickable" onclick="openModal('ar-frota-exclusiva')"><div class="ic">🛫</div><div><h5>Uma frota exclusiva</h5><p>A F1 freta cerca de 6 a 7 Boeing 747 ou 777 cargueiros para levar a parte crítica de todo o grid de uma só vez.</p></div></div>
+            <div class="tp-item clickable" onclick="openModal('ar-desmontagem')"><div class="ic">🔧</div><div><h5>Desmontagem total</h5><p>Assim que a bandeirada cai no domingo, os carros são completamente desmontados: motor, transmissão, asas dianteira e traseira e fluidos são removidos.</p></div></div>
+            <div class="tp-item clickable" onclick="openModal('ar-paletizacao')"><div class="ic">🧊</div><div><h5>Paletização em "pods"</h5><p>Chassi e peças vão em caixas de alumínio sob medida (pods no padrão LD3/LD11), encaixadas perfeitamente no porão do avião — maximizando espaço e travando a carga durante o voo.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CUSTO: MAR X AR ================= -->
+<section class="block" id="custo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">03 — Tempo x Dinheiro</span>
+        <h2>Custo estimado: mar x ar<button class="share-btn" onclick="shareSection('custo')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Os dois modos resolvem o mesmo problema de jeitos opostos — um economiza dinheiro, o outro economiza tempo.</p>
+    </div>
+
+    <div class="cost-grid reveal">
+      <div class="cost-card">
+        <h4>🚢 Rota marítima</h4>
+        <div class="cost-sub">Mais barata, muito mais lenta</div>
+        <div class="cost-bar-row">
+          <div class="cost-bar-label"><span>Custo por tonelada</span><span>baixo</span></div>
+          <div class="cost-bar-track"><div class="cost-bar-fill mar" style="width:15%;"></div></div>
+        </div>
+        <div class="cost-bar-row">
+          <div class="cost-bar-label"><span>Tempo de trânsito</span><span>~2 a 3 semanas</span></div>
+          <div class="cost-bar-track"><div class="cost-bar-fill mar" style="width:90%;"></div></div>
+        </div>
+      </div>
+      <div class="cost-card">
+        <h4>✈️ Rota aérea</h4>
+        <div class="cost-sub">Muito mais cara, quase instantânea</div>
+        <div class="cost-bar-row">
+          <div class="cost-bar-label"><span>Custo por tonelada</span><span>alto</span></div>
+          <div class="cost-bar-track"><div class="cost-bar-fill ar" style="width:88%;"></div></div>
+        </div>
+        <div class="cost-bar-row">
+          <div class="cost-bar-label"><span>Tempo de trânsito</span><span>~1 a 2 dias</span></div>
+          <div class="cost-bar-track"><div class="cost-bar-fill ar" style="width:10%;"></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="cost-note reveal">Valores ilustrativos, só pra dar noção da escala — frete aéreo de carga costuma custar bem mais caro por tonelada do que frete marítimo, o que explica por que só peças críticas e urgentes viajam de avião, enquanto tudo que pode esperar vai de navio.</p>
+  </div>
+</section>
+
+<!-- ================= CRONOGRAMA ================= -->
+<section class="block" id="cronograma">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">04 — Contra o relógio</span>
+        <h2>Cronograma de desmontagem e montagem<button class="share-btn" onclick="shareSection('cronograma')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">O tempo é o maior inimigo da logística. Em cinco dias, o paddock inteiro se desfaz em um país e renasce em outro.</p>
+    </div>
+
+    <div class="photo photo-wide reveal">
+      <img src="assets/img2-oficina.jpg" alt="Mecânicos remontando o carro dentro do box, cercados de caixas e ferramentas">
+      <span class="cap"><span class="idx">IMG.04</span> Remontagem do carro do zero, já no autódromo seguinte</span>
+    </div>
+
+    <div class="timeline reveal">
+      <div class="t-row">
+        <div class="day mono">Dom · 18h</div>
+        <div class="t-dot"></div>
+        <div class="t-content clickable" onclick="openModal('cron-domingo')">
+          <span class="step-tag">Pós-corrida</span>
+          <h4>Desmonte imediato</h4>
+          <p>Assim que o carro chega ao parque fechado, mecânicos e logísticos começam o desmonte. Em 4 a 5 horas, todo o box e os carros já estão embalados em caixas prontas para viagem.</p>
+        </div>
+      </div>
+      <div class="t-row">
+        <div class="day mono">Segunda</div>
+        <div class="t-dot"></div>
+        <div class="t-content clickable" onclick="openModal('cron-segunda')">
+          <span class="step-tag">Rumo ao aeroporto</span>
+          <h4>Caminhões levam as caixas</h4>
+          <p>As caixas seguem para o aeroporto mais próximo, onde alfândega e segurança da F1 — que viajam junto com a carga — agilizam os trâmites.</p>
+        </div>
+      </div>
+      <div class="t-row">
+        <div class="day mono">Terça</div>
+        <div class="t-dot"></div>
+        <div class="t-content clickable" onclick="openModal('cron-terca')">
+          <span class="step-tag">Pouso no destino</span>
+          <h4>Nova frota assume</h4>
+          <p>Os aviões pousam no país seguinte. Uma frota de caminhões locais, contratada com antecedência, leva o material direto para o próximo autódromo.</p>
+        </div>
+      </div>
+      <div class="t-row">
+        <div class="day mono">Quarta</div>
+        <div class="t-dot"></div>
+        <div class="t-content clickable" onclick="openModal('cron-quarta')">
+          <span class="step-tag">Times de avanço</span>
+          <h4>A estrutura começa a subir</h4>
+          <p>Funcionários que viajam antes do restante da equipe recebem as caixas e começam a erguer a estrutura do box do zero.</p>
+        </div>
+      </div>
+      <div class="t-row">
+        <div class="day mono">Quinta</div>
+        <div class="t-dot"></div>
+        <div class="t-content clickable" onclick="openModal('cron-quinta')">
+          <span class="step-tag">Tudo pronto</span>
+          <h4>Carros remontados e testados</h4>
+          <p>Os mecânicos chegam, os carros são remontados do zero e a telemetria é testada — tudo pronto para os treinos livres de sexta-feira.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top:36px; text-align:center;">
+      <button class="info-btn" onclick="openPlanner()">🗂️ Abrir organizador de carga</button>
+      <p style="color:var(--muted); font-size:0.85rem; margin-top:12px;">Marque mar ou ar pra cada item e veja na hora se ele chega a tempo da próxima corrida.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JANELA: ORGANIZADOR DE CARGA ================= -->
+<div class="planner-overlay" id="planner-overlay" onclick="if(event.target===this) closePlanner()">
+  <div class="planner-box" role="dialog" aria-modal="true">
+    <button class="modal-close" onclick="closePlanner()" aria-label="Fechar">✕</button>
+    <h3>Organizador de carga</h3>
+    <p class="planner-sub">Uma planilha simplificada: pra cada item, escolha o transporte e veja em quantos dias ele chega — e se dá tempo até a próxima corrida.</p>
+    <table class="planner-table">
+      <thead>
+        <tr><th>Item</th><th>Transporte</th><th>Chega em</th><th>Status</th></tr>
+      </thead>
+      <tbody id="planner-rows"></tbody>
+    </table>
+    <div class="planner-footer">
+      <div>Prazo até a próxima corrida: <b>6 dias</b></div>
+      <div id="planner-summary">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DESAFIOS & SOLUÇÕES ================= -->
+<section class="block" id="desafios">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">05 — O que pode dar errado</span>
+        <h2>Desafios e soluções da operação<button class="share-btn" onclick="shareSection('desafios')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Cada etapa dessa engrenagem tem um ponto de ruptura possível — e uma solução criada especificamente para evitá-lo.</p>
+    </div>
+
+    <div class="photo photo-wide reveal">
+      <img src="https://images.pexels.com/photos/29320675/pexels-photo-29320675.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Equipe de pit stop trabalhando em carro de corrida">
+      <span class="cap"><span class="idx">IMG.05</span> Cada segundo de atraso na logística vira pressão dentro do box</span>
+    </div>
+
+    <div class="ps-grid reveal">
+      <div class="ps-card clickable" onclick="openModal('desafio-backtoback')">
+        <div class="ps-side ps-problem">
+          <span class="ps-tag">⚠ Problema</span>
+          <h4>Corridas back-to-back em continentes diferentes</h4>
+          <p>Às vezes há menos de 7 dias entre uma corrida e a seguinte, em países ou até continentes distintos — tempo insuficiente para uma logística "normal".</p>
+        </div>
+        <div class="ps-arrow">→</div>
+        <div class="ps-side ps-solution">
+          <span class="ps-tag">✓ Solução</span>
+          <h4>Times de avanço e frota duplicada</h4>
+          <p>Equipes de "avanço" viajam antes para montar a estrutura, enquanto outra parte do time ainda desmonta o box anterior — as duas operações rodam ao mesmo tempo.</p>
+        </div>
+      </div>
+
+      <div class="ps-card clickable" onclick="openModal('desafio-fibra')">
+        <div class="ps-side ps-problem">
+          <span class="ps-tag">⚠ Problema</span>
+          <h4>Fibra de carbono é frágil e caríssima</h4>
+          <p>Uma vibração ou variação brusca de temperatura durante o transporte pode gerar microfraturas invisíveis em peças que custam dezenas de milhares de dólares.</p>
+        </div>
+        <div class="ps-arrow">→</div>
+        <div class="ps-side ps-solution">
+          <span class="ps-tag">✓ Solução</span>
+          <h4>Suspensão a ar e controle de temperatura</h4>
+          <p>Caminhões e pods aéreos sob medida mantêm temperatura estável e absorvem impactos, protegendo o material sensível do início ao fim da viagem.</p>
+        </div>
+      </div>
+
+      <div class="ps-card clickable" onclick="openModal('desafio-peca')">
+        <div class="ps-side ps-problem">
+          <span class="ps-tag">⚠ Problema</span>
+          <h4>Uma peça quebra a milhares de km da fábrica</h4>
+          <p>Um acidente na sexta-feira de treinos pode inutilizar uma peça que só existe na fábrica, do outro lado do mundo.</p>
+        </div>
+        <div class="ps-arrow">→</div>
+        <div class="ps-side ps-solution">
+          <span class="ps-tag">✓ Solução</span>
+          <h4>Fabricação expressa + voo prioritário</h4>
+          <p>A fábrica produz a peça em regime de urgência durante a noite e a despacha em voo comercial ou jato fretado, chegando pronta em 24 a 48 horas.</p>
+        </div>
+      </div>
+
+      <div class="ps-card clickable" onclick="openModal('desafio-alfandega')">
+        <div class="ps-side ps-problem">
+          <span class="ps-tag">⚠ Problema</span>
+          <h4>Bilhões de dólares presos na alfândega</h4>
+          <p>Cada fronteira representa o risco de a carga ficar retida por impostos ou burocracia — o que atrasaria a corrida inteira.</p>
+        </div>
+        <div class="ps-arrow">→</div>
+        <div class="ps-side ps-solution">
+          <span class="ps-tag">✓ Solução</span>
+          <h4>Carnê ATA e negociação antecipada</h4>
+          <p>O "passaporte da carga" libera a entrada e saída temporária sem taxação, e a equipe de operações da F1 já pré-negocia com a alfândega semanas antes.</p>
+        </div>
+      </div>
+
+      <div class="ps-card clickable" onclick="openModal('desafio-mobilia')">
+        <div class="ps-side ps-problem">
+          <span class="ps-tag">⚠ Problema</span>
+          <h4>Mobília e estrutura pesam muito para viajar de avião</h4>
+          <p>Cadeiras, mesas e equipamentos de box são volumosos, pesados e caros de transportar por ar toda vez que a F1 sai da Europa.</p>
+        </div>
+        <div class="ps-arrow">→</div>
+        <div class="ps-side ps-solution">
+          <span class="ps-tag">✓ Solução</span>
+          <h4>5 kits marítimos rodando o ano todo</h4>
+          <p>Kits idênticos navegam permanentemente entre continentes, sempre um passo à frente do calendário, sem nunca precisar voltar à base europeia.</p>
+        </div>
+      </div>
+
+      <div class="ps-card clickable" onclick="openModal('desafio-ambiental')">
+        <div class="ps-side ps-problem">
+          <span class="ps-tag">⚠ Problema</span>
+          <h4>Impacto ambiental de tanto avião e caminhão</h4>
+          <p>Mover o paddock inteiro dezenas de vezes por ano, entre continentes, gera uma pegada de carbono relevante — um problema cada vez mais cobrado pelo público.</p>
+        </div>
+        <div class="ps-arrow">→</div>
+        <div class="ps-side ps-solution">
+          <span class="ps-tag">✓ Solução</span>
+          <h4>Calendário agrupado por região</h4>
+          <p>A F1 vem reorganizando o calendário para encadear corridas geograficamente próximas em sequência, reduzindo voos de ida e volta, dentro da meta de zerar as emissões líquidas até 2030.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MINI-GAME ================= -->
+<section class="block" id="carbono">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">06 — Impacto ambiental</span>
+        <h2>Calculadora de pegada de carbono<button class="share-btn" onclick="shareSection('carbono')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Digite uma distância entre dois autódromos e compare a emissão estimada de CO₂ por tonelada transportada em cada modo.</p>
+    </div>
+
+    <div class="carbon-shell reveal">
+      <div class="carbon-form">
+        <div>
+          <label>Distância (km)</label>
+          <input type="number" id="carbon-distance" placeholder="ex: 9000" min="0" value="9000">
+        </div>
+        <button class="info-btn" onclick="calcCarbon()">Calcular emissão</button>
+      </div>
+
+      <div class="carbon-results">
+        <div class="carbon-row mar">
+          <span class="mode-lbl">🚢 Navio</span>
+          <div class="carbon-bar-track"><div class="carbon-bar-fill" id="carbon-bar-mar" style="width:0%;"></div></div>
+          <span class="carbon-result-val" id="carbon-val-mar">—</span>
+        </div>
+        <div class="carbon-row truck">
+          <span class="mode-lbl">🚚 Caminhão</span>
+          <div class="carbon-bar-track"><div class="carbon-bar-fill" id="carbon-bar-truck" style="width:0%;"></div></div>
+          <span class="carbon-result-val" id="carbon-val-truck">—</span>
+        </div>
+        <div class="carbon-row ar">
+          <span class="mode-lbl">✈️ Avião</span>
+          <div class="carbon-bar-track"><div class="carbon-bar-fill" id="carbon-bar-ar" style="width:0%;"></div></div>
+          <span class="carbon-result-val" id="carbon-val-ar" style="width:0%;">—</span>
+        </div>
+      </div>
+
+      <p class="carbon-disclaimer">Cálculo para 1 tonelada de carga, usando fatores de emissão aproximados de referência (não oficiais): navio ≈ 15 g CO₂/t·km, caminhão ≈ 62 g CO₂/t·km, avião cargueiro ≈ 500 g CO₂/t·km. Valores didáticos, apenas para ilustrar a diferença de escala entre os modos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MINI-GAME ================= -->
+<section class="block" id="jogo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">07 — Ponha à prova</span>
+        <h2>Despachante por um dia<button class="share-btn" onclick="shareSection('jogo')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Cada item que aparece precisa ir pro transporte certo. Errou o destino, perde uma vida. Quanto mais rápido, mais pontos.</p>
+    </div>
+
+    <div class="records-bar reveal" id="records-bar">🏅 Carregando recordes...</div>
+
+    <div class="game-shell reveal">
+      <div class="game-hud">
+        <div class="hud-item">Pontos: <b id="game-score">0</b></div>
+        <div class="hud-item">Vidas: <span class="hearts" id="game-lives">♥ ♥ ♥</span></div>
+        <div class="hud-item">Tempo: <b id="game-time">30</b>s</div>
+      </div>
+      <div class="game-stage">
+        <div class="game-feedback" id="game-feedback"></div>
+
+        <div class="game-start" id="game-start">
+          <div style="font-size:2.4rem;">📦</div>
+          <h3 style="font-family:'Oswald',sans-serif; font-size:1.3rem; text-transform:none;">Pronto pra despachar a carga?</h3>
+          <p style="color:var(--muted); font-size:0.9rem; max-width:380px;">Decida rápido: cada item que cair na tela só pode ir de <strong style="color:var(--text)">navio</strong> (carga pesada, não urgente) ou de <strong style="color:var(--text)">avião</strong> (carga crítica, urgente).</p>
+          <button class="info-btn" onclick="startGame()">▶ Começar</button>
+        </div>
+
+        <div class="hidden" id="game-play">
+          <div class="game-crate" id="game-crate">
+            <div class="icon" id="crate-icon">📦</div>
+            <div class="name" id="crate-name">Item</div>
+          </div>
+          <div class="game-choices" style="margin-top:26px;">
+            <button class="game-btn" onclick="answer('mar')"><span class="em">🚢</span> Navio</button>
+            <button class="game-btn" onclick="answer('ar')"><span class="em">✈️</span> Avião</button>
+          </div>
+        </div>
+
+        <div class="hidden game-over" id="game-over">
+          <div class="score-lbl">Pontuação final</div>
+          <div class="score-big" id="final-score">0</div>
+          <div class="best" id="best-score"></div>
+          <button class="info-btn" onclick="startGame()">↻ Jogar de novo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRILHA DA LOGÍSTICA ================= -->
+<section class="block" id="trilha">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">08 — Siga a carga</span>
+        <h2>Trilha da logística: de corrida a corrida<button class="share-btn" onclick="shareSection('trilha')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Você controla a carga desde a bandeirada de uma corrida até a largada da próxima. No meio do caminho, escolha: navio ou avião?</p>
+    </div>
+
+    <div class="trail-shell reveal">
+      <div class="trail-hud">
+        <div>Etapa: <b id="trail-step">0</b>/<span id="trail-total">12</span></div>
+        <div>Rota: <b id="trail-route">— </b></div>
+        <div>Riscos assumidos: <b id="trail-risk">0</b></div>
+        <div>Dias corridos: <b id="trail-days">0</b> <span style="opacity:0.7;">/ prazo: 6</span></div>
+      </div>
+      <div class="trail-progress"><div class="trail-progress-fill" id="trail-fill"></div></div>
+      <div class="trail-dots" id="trail-dots"></div>
+
+      <div class="trail-stage">
+        <div class="map-overlay" id="trail-map-overlay">
+          <div class="map-canvas" id="map-canvas">
+            <div class="map-road"></div>
+            <div class="map-trail" id="map-trail"></div>
+            <div class="map-marker start">🏟️<span>Autódromo</span></div>
+            <div class="map-marker end" id="map-end-marker">✈️<span>Aeroporto</span></div>
+            <div class="map-truck" id="map-truck">🚚</div>
+            <div class="map-plane" id="map-plane">✈️</div>
+            <div class="map-boat" id="map-boat">🛳️</div>
+          </div>
+          <div class="map-caption" id="map-caption">Rumo ao <b>aeroporto</b>...</div>
+        </div>
+
+        <div id="trail-live">
+          <div class="trail-card" id="trail-card">
+            <div class="icon" id="trail-icon">🏁</div>
+            <div class="title" id="trail-title">Pronto pra começar?</div>
+            <div class="desc" id="trail-desc">Acompanhe a carga desde o fim de uma corrida até o início da próxima — sua escolha muda o caminho.</div>
+            <div class="day-tag" id="trail-daytag"></div>
+          </div>
+          <div class="trail-actions" id="trail-actions" style="margin-top:22px;">
+            <button class="info-btn" onclick="trailStart()">▶ Começar a trilha</button>
+          </div>
+        </div>
+
+        <div class="trail-end hidden" id="trail-end-box">
+          <div class="result-icon" id="trail-result-icon"></div>
+          <div class="result-title" id="trail-result-title"></div>
+          <p id="trail-result-text"></p>
+          <button class="info-btn" onclick="trailStart()">↻ Tentar outro caminho</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CERTIFICADO ================= -->
+<section class="block">
+  <div class="wrap" style="text-align:center;">
+    <button class="info-btn" onclick="openCert()">🏅 Ver meu certificado de despachante</button>
+    <p style="color:var(--muted); font-size:0.85rem; margin-top:12px;">Jogue o "Despachante por um dia" e complete a "Trilha da logística" pelo menos uma vez pra desbloquear.</p>
+  </div>
+</section>
+
+<!-- ================= JANELA: CERTIFICADO ================= -->
+<div class="cert-overlay" id="cert-overlay" onclick="if(event.target===this) closeCert()">
+  <div class="cert-box" id="cert-box" role="dialog" aria-modal="true">
+    <button class="modal-close" onclick="closeCert()" aria-label="Fechar" style="border-color:#B34A1E; color:#1B1F27;">✕</button>
+    <div class="cert-eyebrow" id="cert-eyebrow">Certificado</div>
+    <h3 id="cert-title">Despachante em treinamento</h3>
+    <p class="cert-sub" id="cert-sub">Continue jogando pra desbloquear o certificado completo.</p>
+    <div class="cert-stats" id="cert-stats"></div>
+    <div class="cert-brand">TriUp · Logística F1 · TCC</div>
+  </div>
+</div>
+
+<!-- ================= APROFUNDAMENTO ================= -->
+<section class="block" id="aprofundamento" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">09 — Para além do básico</span>
+        <h2>Três bastidores que completam a operação<button class="share-btn" onclick="shareSection('aprofundamento')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Peças de emergência, combustível e pneus, e as fronteiras que bilhões de dólares em equipamento cruzam a cada duas semanas.</p>
+    </div>
+
+    <div class="acc reveal" id="accordion">
+      <div class="acc-item">
+        <button class="acc-head" data-target="acc1">
+          <span><span class="n mono">01</span><span class="t">Peças de última hora</span></span>
+          <span class="plus mono">+</span>
+        </button>
+        <div class="acc-body" id="acc1">
+          <div class="acc-body-inner">
+            <p>Quando uma peça quebra ou precisa ser redesenhada depois de um treino, a fábrica na Europa (por exemplo, em Maranello, Brackley ou Milton Keynes) pode fabricar uma nova peça durante a madrugada, usando fresadoras CNC e autoclaves para curar a fibra de carbono.</p>
+            <p>Essa peça é levada correndo ao aeroporto mais próximo e despachada em <strong>voos comerciais de passageiros</strong> — muitas vezes como bagagem prioritária — ou, em casos extremos, em <strong>jatos fretados exclusivamente</strong> para aquele item. Às vezes, um funcionário viaja pessoalmente carregando a peça como bagagem de mão, só para não depender dos prazos do cargueiro.</p>
+            <p>Com esse esquema, uma asa nova desenhada na Europa pode estar montada no carro, do outro lado do mundo, em menos de 24 a 48 horas.</p>
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" data-target="acc2">
+          <span><span class="n mono">02</span><span class="t">Combustível e pneus</span></span>
+          <span class="plus mono">+</span>
+        </button>
+        <div class="acc-body" id="acc2">
+          <div class="acc-body-inner">
+            <p><strong>Pneus:</strong> a Pirelli, fornecedora única desde 2011, fabrica os pneus centralmente e os envia para cada circuito antes mesmo da chegada da carga das equipes. Os compostos disponíveis em cada corrida são definidos com meses de antecedência, e cada piloto recebe um número fixo de jogos por fim de semana, conforme o regulamento da FIA.</p>
+            <p><strong>Combustível:</strong> cada equipe tem um parceiro de combustível próprio (como Shell, Petronas ou ExxonMobil), que produz um blend certificado especificamente para aquele motor. Por isso o combustível não pode ser comprado localmente — ele é transportado em tambores lacrados e rastreáveis até cada autódromo, seguindo regras rígidas de composição da FIA.</p>
+          </div>
+        </div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-head" data-target="acc3">
+          <span><span class="n mono">03</span><span class="t">Taxas alfandegárias</span></span>
+          <span class="plus mono">+</span>
+        </button>
+        <div class="acc-body" id="acc3">
+          <div class="acc-body-inner">
+            <p>Para mover bilhões de dólares em equipamento por dezenas de países sem pagar impostos de importação a cada parada, a F1 e as equipes usam o <strong>Carnê ATA</strong> — um documento aceito internacionalmente, conhecido como "passaporte da carga", que permite entrada e saída temporária de bens em mais de 80 países sem taxação, já que o material sempre retorna depois da corrida.</p>
+            <p>Um departamento de operações da própria F1 negocia com a alfândega de cada país anfitrião com semanas de antecedência, pré-liberando a documentação. É esse trabalho invisível que permite que caminhões e aviões sejam descarregados e já estejam a caminho da pista poucas horas depois de pousar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LINHA DO TEMPO HISTÓRICA ================= -->
+<section class="block" id="historia">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">10 — Como isso mudou</span>
+        <h2>Uma linha do tempo (bem resumida)<button class="share-btn" onclick="shareSection('historia')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">A logística que existe hoje não nasceu pronta — ela foi crescendo junto com o próprio calendário da categoria.</p>
+    </div>
+
+    <div class="history-track reveal">
+      <div class="history-row">
+        <div class="era mono">Anos 1950–60</div>
+        <div class="history-dot"></div>
+        <div>
+          <h4>Quase tudo dentro da Europa</h4>
+          <p>O calendário era concentrado majoritariamente em circuitos europeus. Equipes viajavam com poucos caminhões e reboques simples — nada perto da operação multimodal de hoje.</p>
+        </div>
+      </div>
+      <div class="history-row">
+        <div class="era mono">Anos 1970–80</div>
+        <div class="history-dot"></div>
+        <div>
+          <h4>O calendário começa a sair da Europa</h4>
+          <p>Com corridas nas Américas e na Oceania entrando no calendário, as equipes passam a depender de frete aéreo comercial para levar a carga mais urgente entre continentes.</p>
+        </div>
+      </div>
+      <div class="history-row">
+        <div class="era mono">Anos 1990–2000</div>
+        <div class="history-dot"></div>
+        <div>
+          <h4>Motorhomes maiores, frotas maiores</h4>
+          <p>O paddock europeu cresce em estrutura — motorhomes de vários andares e uma frota terrestre cada vez mais numerosa, aproximando-se do modelo atual.</p>
+        </div>
+      </div>
+      <div class="history-row">
+        <div class="era mono">A partir de 2013</div>
+        <div class="history-dot"></div>
+        <div>
+          <h4>DHL vira parceira logística oficial</h4>
+          <p>A F1 formaliza uma parceria logística global com a DHL, centralizando o planejamento das rotas aéreas e marítimas entre todas as equipes — o modelo que o site descreve nas seções anteriores.</p>
+        </div>
+      </div>
+      <div class="history-row">
+        <div class="era mono">2020 em diante</div>
+        <div class="history-dot"></div>
+        <div>
+          <h4>Mais corridas fora da Europa, mais pressão ambiental</h4>
+          <p>Com um calendário recorde de etapas e cobrança crescente por sustentabilidade, a categoria passa a reorganizar o calendário por proximidade geográfica, buscando reduzir deslocamentos desnecessários.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GLOSSÁRIO ================= -->
+<section class="block" id="glossario">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">11 — Pra não se perder</span>
+        <h2>Glossário rápido<button class="share-btn" onclick="shareSection('glossario')" title="Copiar link desta seção">🔗</button></h2>
+      </div>
+      <p class="sub">Clique em qualquer termo pra ver uma explicação curta e direta.</p>
+    </div>
+
+    <div class="glossary-grid reveal">
+      <button class="gloss-chip" onclick="openModal('gloss-flyaway')"><span class="q">?</span> Flyaway</button>
+      <button class="gloss-chip" onclick="openModal('gloss-parquefechado')"><span class="q">?</span> Parque fechado</button>
+      <button class="gloss-chip" onclick="openModal('gloss-pods')"><span class="q">?</span> Pods / ULD</button>
+      <button class="gloss-chip" onclick="openModal('gloss-carnet')"><span class="q">?</span> Carnê ATA</button>
+      <button class="gloss-chip" onclick="openModal('gloss-telemetria')"><span class="q">?</span> Telemetria</button>
+      <button class="gloss-chip" onclick="openModal('gloss-motorhome')"><span class="q">?</span> Motorhome</button>
+      <button class="gloss-chip" onclick="openModal('gloss-monocoque')"><span class="q">?</span> Monocoque</button>
+      <button class="gloss-chip" onclick="openModal('gloss-kits')"><span class="q">?</span> Kits marítimos</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SOBRE O GRUPO ================= -->
+<section class="block" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-tag">Créditos</span>
+        <h2>Sobre o grupo</h2>
+      </div>
+      <p class="sub">Trabalho de Conclusão de Curso desenvolvido pelo grupo TriUp.</p>
+    </div>
+    <div class="team-grid reveal">
+      <div class="team-card">
+        <div class="team-avatar">A</div>
+        <div class="t-name">Arthur</div>
+        <div class="t-role">Diretor de Tecnologia</div>
+        <div class="t-desc">Desenvolvimento: constrói o sistema e faz tudo funcionar.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">V</div>
+        <div class="t-name">Vitor</div>
+        <div class="t-role">Diretor de Design</div>
+        <div class="t-desc">Design: cuida do visual e da facilidade de uso.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">E</div>
+        <div class="t-name">Ermesson</div>
+        <div class="t-role">Diretor de Pesquisa</div>
+        <div class="t-desc">Pesquisa: reúne as informações e garante que o conteúdo esteja correto.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="brand" style="margin-bottom:16px;">
+        <span class="brand-badge lg"><img src="assets/triup-web.png" alt="Logo do grupo TriUp"></span>
+        <span class="brand-name">TriUp<span class="sep">Teamwork · Growth · Success</span></span>
+      </div>
+      <p class="note">Trabalho de Conclusão de Curso sobre a operação logística da Fórmula 1: como equipes movem carros, equipamentos e estruturas inteiras entre continentes em questão de dias.</p>
+    </div>
+    <div class="sources">
+      <b>Tópicos abordados</b>
+      Logística terrestre — Europa<br>
+      Rota marítima e aérea — Flyaway<br>
+      Cronograma de desmontagem e montagem<br>
+      Peças de emergência, combustível/pneus, alfândega
+    </div>
+  </div>
+  <div class="wrap" style="margin-top:34px; padding-top:24px; border-top:1px solid var(--line);">
+    <p class="mono" style="font-size:0.66rem; color:var(--muted); letter-spacing:0.04em;">Fotos: geradas para este projeto (grupo TriUp) e banco de imagens Pexels (uso livre).</p>
+    <p style="font-size:0.78rem; color:var(--muted); max-width:680px; margin-top:14px; line-height:1.7;">
+      <strong style="color:var(--text);">Fontes e inspiração:</strong> este trabalho foi construído a partir de informações públicas sobre a operação logística da Fórmula 1 — incluindo materiais de divulgação da própria categoria, da parceria com a DHL, e reportagens especializadas em automobilismo sobre bastidores de transporte. Para a versão escrita do TCC, lembre de substituir isso por citações completas (autor, veículo, data, link) das fontes que vocês efetivamente consultaram.
+    </p>
+  </div>
+</footer>
+
+<!-- ================= LIGHTBOX DO INFOGRÁFICO ================= -->
+<div class="img-modal-overlay" id="img-modal-overlay" onclick="if(event.target===this) closeImageModal()">
+  <button class="img-modal-close" onclick="closeImageModal()" aria-label="Fechar">✕</button>
+  <div class="img-modal-inner">
+    <img src="assets/infografico.jpg" alt="Infográfico completo sobre a logística da Fórmula 1, ampliado">
+  </div>
+</div>
+
+<!-- ================= MODAL (janela individual por item) ================= -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box" id="modal-box" role="dialog" aria-modal="true">
+    <button class="modal-close" onclick="closeModal()" aria-label="Fechar">✕</button>
+    <span class="modal-tag" id="modal-tag"></span>
+    <h3 id="modal-title"></h3>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Accordion
+  document.querySelectorAll('.acc-head').forEach(head=>{
+    head.addEventListener('click', ()=>{
+      const item = head.closest('.acc-item');
+      const body = document.getElementById(head.dataset.target);
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.acc-item.open').forEach(o=>{
+        o.classList.remove('open');
+        o.querySelector('.acc-body').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // ---------- Modal (janela dedicada por informação) ----------
+  const modalData = {
+    'gloss-flyaway': {
+      tag: 'Glossário', title: 'Flyaway',
+      body: `<p>Apelido dado a qualquer corrida do calendário que acontece <strong>fora da Europa</strong> — Américas, Ásia, Oriente Médio, Oceania. É nessas etapas que entra a logística aérea e marítima coordenada pela F1 e pela DHL.</p>`
+    },
+    'gloss-parquefechado': {
+      tag: 'Glossário', title: 'Parque fechado',
+      body: `<p>Área isolada onde os carros ficam guardados sob supervisão da FIA logo após a classificação e a corrida, antes de qualquer trabalho começar neles. É o ponto de partida simbólico da cadeia logística de cada fim de semana.</p>`
+    },
+    'gloss-pods': {
+      tag: 'Glossário', title: 'Pods / ULD',
+      body: `<p>Caixas de alumínio no padrão internacional <strong>ULD</strong> (Unit Load Device — nos modelos LD3 ou LD11), desenhadas para encaixar perfeitamente no porão curvo de um avião cargueiro, maximizando espaço e travando a carga durante o voo.</p>`
+    },
+    'gloss-carnet': {
+      tag: 'Glossário', title: 'Carnê ATA',
+      body: `<p>Documento internacional aceito em mais de 80 países, conhecido como "passaporte da carga". Permite que equipamento entre e saia de um país temporariamente sem pagar impostos de importação, já que ele sempre volta depois da corrida.</p>`
+    },
+    'gloss-telemetria': {
+      tag: 'Glossário', title: 'Telemetria',
+      body: `<p>Sistema que coleta e transmite dados do carro em tempo real — velocidade, temperatura, pressão dos pneus, entre outros. Os laboratórios de telemetria viajam junto com a frota, e precisam ser testados a cada remontagem do carro.</p>`
+    },
+    'gloss-motorhome': {
+      tag: 'Glossário', title: 'Motorhome',
+      body: `<p>Estrutura de hospitalidade de duas ou três lajes que cada equipe monta no paddock — funciona como escritório, sala de reunião e área de convidados. Só é usado nas etapas europeias, por ser grande demais para viajar de avião.</p>`
+    },
+    'gloss-monocoque': {
+      tag: 'Glossário', title: 'Monocoque (chassi)',
+      body: `<p>O "esqueleto" do carro, feito de fibra de carbono, ao qual todas as outras peças são fixadas. É uma das partes mais caras e frágeis de toda a operação — por isso nunca viaja montado dentro do carro.</p>`
+    },
+    'gloss-kits': {
+      tag: 'Glossário', title: 'Kits marítimos',
+      body: `<p>Conjuntos duplicados de mobília e estrutura de box (mesas, cadeiras, cozinha) que cada equipe mantém circulando permanentemente pelo mundo em navios cargueiros, sincronizados com o calendário de corridas "flyaway".</p>`
+    },
+    'frota-oficial': {
+      tag: 'Europa · Frota oficial',
+      title: 'Entre 20 e 30 caminhões por equipe',
+      body: `<p>Cada equipe monta a própria frota — sem compartilhar veículos com outras equipes. Não são caminhões comuns: cada um é <strong>customizado internamente</strong> para uma função específica dentro da operação.</p>
+             <p>Além dos carros de corrida, essa frota carrega <strong>laboratórios de telemetria</strong> (para análise de dados em tempo real), estoques de peças de reposição e os motorhomes — as estruturas de hospitalidade de dois ou três andares que viram o "escritório" da equipe no paddock.</p>
+             <p>Montar essa frota inteira, de zero, pode levar entre 20 e 30 caminhões articulados por equipe — o equivalente a uma pequena transportadora dedicada só a uma escuderia.</p>`
+    },
+    'carga-sensivel': {
+      tag: 'Europa · Carga sensível',
+      title: 'Chassis nunca viajam montados',
+      body: `<p>O monocoque de fibra de carbono — o "esqueleto" do carro — é uma das peças mais caras e mais frágeis de toda a equipe. Por isso, ele nunca é transportado dentro do carro montado.</p>
+             <p>Dentro do caminhão, o chassi fica preso em <strong>suportes especiais com amortecimento próprio</strong>, isolado de vibrações da estrada. O compartimento de carga tem <strong>controle ativo de temperatura</strong>, porque variações térmicas bruscas também podem comprometer a resina que mantém as camadas de fibra de carbono coladas.</p>
+             <p>Uma microfratura invisível a olho nu, causada por uma vibração mal absorvida, pode se tornar uma falha estrutural séria em alta velocidade — por isso esse cuidado começa muito antes da pista.</p>`
+    },
+    'motoristas-revezamento': {
+      tag: 'Europa · Operação non-stop',
+      title: 'Motoristas em revezamento',
+      body: `<p>Quando o calendário coloca duas corridas europeias em fins de semana seguidos — os chamados <strong>back-to-backs</strong> — não há tempo de descanso tradicional para a logística.</p>
+             <p>As leis trabalhistas europeias limitam quantas horas seguidas um motorista pode dirigir. Para não violar essas regras e, ao mesmo tempo, não parar a viagem, as equipes escalam <strong>duplas ou trios de motoristas</strong> por caminhão, que se revezam ao volante enquanto o veículo segue em movimento.</p>
+             <p>É esse revezamento que permite que uma frota inteira atravesse o continente em poucos dias, sem que ninguém infrinja a lei nem o cronograma pare.</p>`
+    },
+    'mar-o-que-vai': {
+      tag: 'Flyaway · Rota marítima',
+      title: 'O que viaja de navio',
+      body: `<p>A regra é simples: se o item é pesado, não é urgente e existe em duplicata, ele vai de navio. Isso inclui <strong>cadeiras, mesas, geladeiras, fogões, painéis divisórios do box e ferramentas básicas</strong> — tudo que monta a "casa" da equipe dentro do paddock.</p>
+             <p>Nenhum desses itens é insubstituível: se um contêiner atrasasse, a equipe ainda conseguiria correr (só não teria a estrutura completa de conforto). Por isso não faz sentido pagar o preço muito mais alto do frete aéreo por eles.</p>`
+    },
+    'mar-5kits': {
+      tag: 'Flyaway · Rota marítima',
+      title: 'A estratégia dos 5 kits',
+      body: `<p>Enviar a mesma mobília de volta à Europa e trazer de novo a cada corrida "flyaway" seria caro e lento. A solução das equipes foi duplicar tudo <strong>cinco vezes</strong>.</p>
+             <p>Cinco kits idênticos de estrutura — mesas, cadeiras, cozinha, ferramentas — ficam permanentemente em rota ao redor do mundo. Enquanto o Kit 1 está sendo usado numa corrida na Austrália, o Kit 2 já está no meio do oceano rumo a Miami, o Kit 3 a caminho do Japão, e assim por diante, numa relação de rodízio contínuo.</p>
+             <p>Essa sincronização é decidida com <strong>meses de antecedência</strong>, encaixando o tempo de navegação de cada kit com a data exata de cada corrida no calendário.</p>`
+    },
+    'mar-ano-todo': {
+      tag: 'Flyaway · Rota marítima',
+      title: 'O ano inteiro no mar',
+      body: `<p>Diferente dos caminhões europeus, que voltam para a base entre corridas, os contêineres marítimos praticamente não têm "casa". Eles passam a temporada inteira <strong>navegando de porto em porto</strong>, sempre a caminho da próxima etapa "flyaway" do calendário.</p>
+             <p>Esse fluxo contínuo é o que permite às equipes não depender do frete aéreo para tudo — reduzindo custo e, também, a pegada de carbono da operação, já que navios cargueiros emitem muito menos por tonelada transportada do que aviões.</p>`
+    },
+    'ar-frota-exclusiva': {
+      tag: 'Flyaway · Rota aérea',
+      title: 'Uma frota exclusiva',
+      body: `<p>A F1 (através da parceria com a DHL) freta entre <strong>6 e 7 aviões cargueiros Boeing 747 ou 777</strong> só para levar a carga crítica de todas as equipes ao mesmo tempo — os carros, motores e peças que não podem esperar o navio.</p>
+             <p>Esses aviões não pertencem a nenhuma equipe individual: é uma operação centralizada, coordenada pela própria F1, que negocia rotas, horários e prioridades de carregamento para o grid inteiro de uma só vez.</p>`
+    },
+    'ar-desmontagem': {
+      tag: 'Flyaway · Rota aérea',
+      title: 'Desmontagem total',
+      body: `<p>Assim que a bandeirada cai no domingo, começa uma corrida contra o tempo dentro do próprio box. Em poucas horas, os mecânicos desmontam o carro <strong>completamente</strong>: motor, caixa de câmbio, asa dianteira, asa traseira e todos os fluidos são removidos.</p>
+             <p>Isso não é só para economizar espaço — peças montadas juntas correm mais risco de se chocar ou se soltar durante o transporte. Separadas, cada peça pode ser embalada e protegida individualmente.</p>`
+    },
+    'ar-paletizacao': {
+      tag: 'Flyaway · Rota aérea',
+      title: 'Paletização em "pods"',
+      body: `<p>Depois de desmontadas, as peças vão para caixas de alumínio feitas sob medida, chamadas de <strong>pods</strong>, no formato padrão ULD (LD3 ou LD11) — o mesmo tipo de container usado por companhias aéreas de carga no mundo todo.</p>
+             <p>Esses pods são desenhados para encaixar perfeitamente na curvatura interna do porão do avião, <strong>sem espaços vazios</strong>. Isso maximiza quantas equipes cabem no mesmo voo e evita que a carga se movimente durante turbulências.</p>`
+    },
+    'cron-domingo': {
+      tag: 'Cronograma · Domingo, 18h',
+      title: 'Desmonte imediato',
+      body: `<p>O relógio começa a contar assim que o carro entra no parque fechado, logo após a corrida. Toda a equipe de mecânicos e logísticos se divide entre desmontar o carro e embalar o box ao mesmo tempo.</p>
+             <p>Em apenas <strong>4 a 5 horas</strong>, todo o conteúdo do garage — carro, ferramentas, telemetria, mobília — já está dentro das caixas de transporte, prontas para sair naquela mesma noite.</p>`
+    },
+    'cron-segunda': {
+      tag: 'Cronograma · Segunda-feira',
+      title: 'Caminhões levam as caixas',
+      body: `<p>Com tudo embalado, os caminhões seguem direto para o aeroporto mais próximo do autódromo. Não é uma viagem qualquer: <strong>equipes de alfândega e segurança da própria F1</strong> viajam junto com a carga desde a saída do circuito.</p>
+             <p>Essa presença agiliza os trâmites burocráticos assim que a carga chega ao terminal de cargas, evitando filas e atrasos que uma carga "normal" enfrentaria.</p>`
+    },
+    'cron-terca': {
+      tag: 'Cronograma · Terça-feira',
+      title: 'Nova frota assume',
+      body: `<p>Enquanto isso, do outro lado do trajeto, os aviões cargueiros pousam no país da próxima corrida. Ali, uma <strong>frota de caminhões local</strong> — contratada com antecedência pela organização — já está esperando.</p>
+             <p>Essa frota local pega a carga direto no aeroporto e a leva para o próximo autódromo, muitas vezes ainda no mesmo dia.</p>`
+    },
+    'cron-quarta': {
+      tag: 'Cronograma · Quarta-feira',
+      title: 'A estrutura começa a subir',
+      body: `<p>Antes do grosso da equipe chegar, um grupo enxuto de funcionários — os <strong>"times de avanço"</strong> — já está no local há dias, recebendo a carga e começando a erguer a estrutura do zero: paredes do box, bancadas, tomadas, rede de internet.</p>
+             <p>É um trabalho de bastidor pouco visto pelo público, mas é o que garante que, quando o resto da equipe chegar, o "escritório" já esteja de pé.</p>`
+    },
+    'cron-quinta': {
+      tag: 'Cronograma · Quinta-feira',
+      title: 'Carros remontados e testados',
+      body: `<p>Só na quinta-feira os mecânicos principais chegam ao autódromo. É quando o carro é <strong>remontado do zero</strong>, peça por peça, seguindo o caminho inverso do desmonte de domingo.</p>
+             <p>Depois de remontado, toda a telemetria é testada e calibrada antes de qualquer roda girar. O objetivo é ter tudo <strong>100% pronto</strong> para os primeiros treinos livres, que normalmente começam na sexta-feira de manhã.</p>`
+    },
+    'desafio-backtoback': {
+      tag: 'Desafio 01',
+      title: 'Corridas back-to-back em continentes diferentes',
+      body: `<p><strong>O problema:</strong> em algumas fases do calendário, há menos de 7 dias entre uma corrida e a seguinte — às vezes em continentes diferentes. É tempo insuficiente para desmontar, transportar e remontar tudo do jeito "convencional".</p>
+             <p><strong>A solução:</strong> as equipes rodam duas operações em paralelo. Um "time de avanço" já viaja para o próximo destino antes mesmo da corrida atual terminar, enquanto o restante da equipe cuida do desmonte do box anterior. As duas frentes se encontram no meio do caminho, sem nunca parar.</p>`
+    },
+    'desafio-fibra': {
+      tag: 'Desafio 02',
+      title: 'Fibra de carbono é frágil e caríssima',
+      body: `<p><strong>O problema:</strong> peças de fibra de carbono podem custar dezenas de milhares de dólares e são extremamente sensíveis a vibração e temperatura. Uma microfratura invisível durante o transporte pode comprometer a segurança em pista.</p>
+             <p><strong>A solução:</strong> caminhões com suspensão a ar absorvem impactos da estrada, e tanto caminhões quanto os "pods" de avião mantêm controle ativo de temperatura. É um transporte tratado quase como carga médica ou de laboratório.</p>`
+    },
+    'desafio-peca': {
+      tag: 'Desafio 03',
+      title: 'Uma peça quebra a milhares de km da fábrica',
+      body: `<p><strong>O problema:</strong> um acidente na sexta-feira de treinos pode destruir uma peça que só existe fisicamente na fábrica, do outro lado do mundo — sem ela, o carro pode nem completar o fim de semana.</p>
+             <p><strong>A solução:</strong> a fábrica entra em regime de urgência, fabricando a peça durante a madrugada. Ela é despachada em voo comercial prioritário ou até em jato fretado exclusivamente para aquele item, chegando pronta em 24 a 48 horas — às vezes levada por um funcionário como bagagem de mão.</p>`
+    },
+    'desafio-alfandega': {
+      tag: 'Desafio 04',
+      title: 'Bilhões de dólares presos na alfândega',
+      body: `<p><strong>O problema:</strong> a cada corrida "flyaway", equipamentos que valem bilhões de dólares cruzam uma fronteira internacional. Qualquer entrave burocrático ou taxação poderia travar a operação inteira antes mesmo de chegar à pista.</p>
+             <p><strong>A solução:</strong> o Carnê ATA, um documento internacional aceito em mais de 80 países, permite entrada e saída temporária sem pagar impostos de importação — já que o material sempre volta depois da corrida. Um departamento da própria F1 ainda pré-negocia com a alfândega de cada país, semanas antes da chegada da carga.</p>`
+    },
+    'desafio-mobilia': {
+      tag: 'Desafio 05',
+      title: 'Mobília e estrutura pesam muito para viajar de avião',
+      body: `<p><strong>O problema:</strong> cadeiras, mesas, cozinhas e painéis de box são volumosos e pesados. Transportar tudo isso de avião toda vez que a F1 sai da Europa custaria uma fortuna e ocuparia espaço que poderia levar peças críticas.</p>
+             <p><strong>A solução:</strong> cinco kits marítimos idênticos ficam permanentemente circulando pelo mundo, sincronizados com o calendário — sempre um passo à frente da próxima corrida "flyaway", sem nunca precisar voltar à base europeia.</p>`
+    },
+    'desafio-ambiental': {
+      tag: 'Desafio 06',
+      title: 'Impacto ambiental de tanto avião e caminhão',
+      body: `<p><strong>O problema:</strong> mover o paddock inteiro dezenas de vezes por ano, entre continentes, usando aviões cargueiros e milhares de quilômetros de estrada, gera uma pegada de carbono relevante — um ponto cada vez mais cobrado pelo público e pela imprensa.</p>
+             <p><strong>A solução:</strong> a F1 vem reorganizando o calendário para agrupar corridas geograficamente próximas em sequência, reduzindo voos de ida e volta à Europa entre etapas. Isso faz parte da meta declarada da categoria de zerar as emissões líquidas de carbono até 2030.</p>`
+    },
+  };
+
+  function openModal(key){
+    const data = modalData[key];
+    if(!data) return;
+    document.getElementById('modal-tag').textContent = data.tag;
+    document.getElementById('modal-title').textContent = data.title;
+    document.getElementById('modal-body').innerHTML = data.body;
+    document.getElementById('modal-overlay').classList.add('open');
+    document.getElementById('modal-box').scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){ closeModal(); closeImageModal(); closePlanner(); }
+  });
+
+  // ---------- Lightbox do infográfico ----------
+  function openImageModal(){
+    document.getElementById('img-modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeImageModal(){
+    document.getElementById('img-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ---------- Organizador de carga (planilha simplificada) ----------
+  const PLANNER_DEADLINE = 6;
+  const PLANNER_DAYS = { mar: 19, ar: 2 };
+  let plannerItems = [
+    {name:'Cadeiras do box', icon:'🪑', mode:'mar'},
+    {name:'Mesas e bancadas', icon:'🗄️', mode:'mar'},
+    {name:'Cozinha do motorhome', icon:'🍳', mode:'mar'},
+    {name:'Painéis do box', icon:'🧱', mode:'mar'},
+    {name:'Ferramentas básicas', icon:'🧰', mode:'mar'},
+    {name:'Chassi do carro', icon:'🏎️', mode:'ar'},
+    {name:'Motor', icon:'⚙️', mode:'ar'},
+    {name:'Caixa de câmbio', icon:'🔩', mode:'ar'},
+    {name:'Asas dianteira/traseira', icon:'🪽', mode:'ar'},
+    {name:'Peça de emergência', icon:'🚨', mode:'ar'},
+  ];
+
+  function openPlanner(){
+    renderPlanner();
+    document.getElementById('planner-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePlanner(){
+    const el = document.getElementById('planner-overlay');
+    if(el) el.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function plannerSetMode(idx, mode){
+    plannerItems[idx].mode = mode;
+    renderPlanner();
+  }
+
+  function renderPlanner(){
+    const tbody = document.getElementById('planner-rows');
+    tbody.innerHTML = '';
+    let lateCount = 0;
+
+    plannerItems.forEach((item, idx)=>{
+      const days = PLANNER_DAYS[item.mode];
+      const onTime = days <= PLANNER_DEADLINE;
+      if(!onTime) lateCount++;
+
+      const tr = document.createElement('tr');
+
+      const tdItem = document.createElement('td');
+      tdItem.setAttribute('data-label','Item');
+      tdItem.innerHTML = `<span class="planner-item">${item.icon} ${item.name}</span>`;
+
+      const tdMode = document.createElement('td');
+      tdMode.setAttribute('data-label','Transporte');
+      tdMode.innerHTML = `
+        <span class="planner-toggle">
+          <button class="${item.mode==='mar'?'active mar':''}" onclick="plannerSetMode(${idx},'mar')">🚢 Mar</button>
+          <button class="${item.mode==='ar'?'active ar':''}" onclick="plannerSetMode(${idx},'ar')">✈️ Ar</button>
+        </span>`;
+
+      const tdDays = document.createElement('td');
+      tdDays.setAttribute('data-label','Chega em');
+      tdDays.innerHTML = `<span class="planner-days">${days} dia${days===1?'':'s'}</span>`;
+
+      const tdStatus = document.createElement('td');
+      tdStatus.setAttribute('data-label','Status');
+      tdStatus.innerHTML = onTime
+        ? `<span class="planner-status ok">✓ No prazo</span>`
+        : `<span class="planner-status late">✕ Fora do prazo</span>`;
+
+      tr.append(tdItem, tdMode, tdDays, tdStatus);
+      tbody.appendChild(tr);
+    });
+
+    const summary = document.getElementById('planner-summary');
+    if(lateCount === 0){
+      summary.innerHTML = '✅ <b>Tudo dentro do prazo</b>';
+    } else {
+      summary.innerHTML = `⚠️ <b>${lateCount}</b> ite${lateCount===1?'m':'ns'} fora do prazo — bom pra mobília, ruim se fosse peça do carro`;
+    }
+  }
+
+  // ---------- Mini-game: Despachante por um dia ----------
+  const cargoItems = [
+    {name:'Cadeiras do box', icon:'🪑', mode:'mar'},
+    {name:'Mesa de reunião', icon:'🗄️', mode:'mar'},
+    {name:'Equipamento de cozinha', icon:'🍳', mode:'mar'},
+    {name:'Painéis do box', icon:'🧱', mode:'mar'},
+    {name:'Ferramentas básicas', icon:'🧰', mode:'mar'},
+    {name:'Chassi do carro', icon:'🏎️', mode:'ar'},
+    {name:'Motor', icon:'⚙️', mode:'ar'},
+    {name:'Caixa de câmbio', icon:'🔩', mode:'ar'},
+    {name:'Asa dianteira', icon:'🪽', mode:'ar'},
+    {name:'Asa traseira', icon:'🪽', mode:'ar'},
+    {name:'Fluidos do carro', icon:'🧪', mode:'ar'},
+    {name:'Peça de emergência', icon:'🚨', mode:'ar'},
+  ];
+
+  let gameScore = 0, gameLives = 3, gameTime = 30, gameTimer = null, currentItem = null, gameActive = false;
+
+  function startGame(){
+    gameScore = 0; gameLives = 3; gameTime = 30; gameActive = true;
+    document.getElementById('game-score').textContent = gameScore;
+    document.getElementById('game-time').textContent = gameTime;
+    document.getElementById('game-lives').textContent = '♥ ♥ ♥';
+    document.getElementById('game-start').classList.add('hidden');
+    document.getElementById('game-over').classList.add('hidden');
+    document.getElementById('game-play').classList.remove('hidden');
+    nextItem();
+    clearInterval(gameTimer);
+    gameTimer = setInterval(()=>{
+      gameTime--;
+      document.getElementById('game-time').textContent = gameTime;
+      if(gameTime <= 0) endGame();
+    }, 1000);
+  }
+
+  function nextItem(){
+    currentItem = cargoItems[Math.floor(Math.random()*cargoItems.length)];
+    document.getElementById('crate-icon').textContent = currentItem.icon;
+    document.getElementById('crate-name').textContent = currentItem.name;
+    const crate = document.getElementById('game-crate');
+    crate.style.animation = 'none';
+    void crate.offsetWidth;
+    crate.style.animation = 'crateIn .3s ease';
+  }
+
+  function answer(mode){
+    if(!gameActive) return;
+    const fb = document.getElementById('game-feedback');
+    if(mode === currentItem.mode){
+      gameScore += 10;
+      document.getElementById('game-score').textContent = gameScore;
+      fb.textContent = '✓ Destino certo!';
+      fb.className = 'game-feedback show ok';
+    } else {
+      gameLives--;
+      document.getElementById('game-lives').textContent = '♥ '.repeat(Math.max(gameLives,0)).trim() || '—';
+      fb.textContent = '✕ Foi pro lugar errado';
+      fb.className = 'game-feedback show bad';
+      if(gameLives <= 0){ endGame(); return; }
+    }
+    setTimeout(()=>{ fb.classList.remove('show'); }, 500);
+    nextItem();
+  }
+
+  function endGame(){
+    gameActive = false;
+    clearInterval(gameTimer);
+    document.getElementById('game-play').classList.add('hidden');
+    document.getElementById('game-over').classList.remove('hidden');
+    document.getElementById('final-score').textContent = gameScore;
+    localStorage.setItem('triup-played-despachante', 'true');
+    let best = parseInt(localStorage.getItem('triup-despachante-best') || '0', 10);
+    if(gameScore > best){
+      best = gameScore;
+      localStorage.setItem('triup-despachante-best', best);
+      document.getElementById('best-score').textContent = 'Novo recorde! 🏆 ' + best + ' pontos';
+    } else {
+      document.getElementById('best-score').textContent = 'Recorde: ' + best + ' pontos';
+    }
+    updateRecordsBar();
+  }
+
+  // ---------- Trilha da logística: de corrida a corrida ----------
+  // Cada nó "auto" tem custo fixo em dias. Cada nó "choice" oferece 2 opções,
+  // cada uma com seu próprio custo em dias e em risco — quem joga decide o trade-off.
+  const trailNodes = {
+    n0:  {icon:'🏁', title:'Bandeirada — a corrida termina', desc:'O carro entra no parque fechado. A contagem regressiva para a próxima corrida começa agora.', day:0, next:'n1'},
+
+    n1:  {icon:'🔧', title:'Desmontagem no box', desc:'Como a equipe vai desmontar o carro?', choice:true,
+          options:[
+            {label:'🧰 Com calma, seguindo o checklist completo', go:'n2', day:1, risk:0},
+            {label:'⏱️ Correndo, pra ganhar tempo', go:'n2', day:0, risk:1},
+          ]},
+
+    n2:  {icon:'📦', title:'Embalagem da carga', desc:'Que tipo de embalagem usar nas peças mais sensíveis?', choice:true,
+          options:[
+            {label:'🌡️ Reforçada, com controle de temperatura', go:'n3', day:1, risk:0},
+            {label:'📦 Padrão, sem proteção extra', go:'n3', day:0, risk:1},
+          ]},
+
+    n3:  {icon:'🧭', title:'Escolha o caminho da carga', desc:'Carga pesada e não urgente pode economizar indo de navio. Carga crítica precisa do avião.', choice:true,
+          options:[
+            {label:'🚢 Seguir de Navio', go:'m1', day:0, risk:0, route:'mar'},
+            {label:'✈️ Seguir de Avião', go:'a1', day:0, risk:0, route:'ar'},
+          ]},
+
+    m1:  {icon:'🛳️', title:'Qual serviço de navio contratar?', desc:'A carga precisa embarcar — mas existem duas opções de contrato.', choice:true,
+          options:[
+            {label:'🐌 Rota padrão dos 5 kits (mais barata)', go:'m2', day:18, risk:0},
+            {label:'🚀 Frete marítimo expresso (mais caro, ainda lento)', go:'m2', day:12, risk:0},
+          ]},
+    m2:  {icon:'🛃', title:'Desembarque e alfândega marítima', desc:'A carga é liberada no porto de destino e segue para terra firme.', day:1, next:'n8'},
+
+    a1:  {icon:'✈️', title:'Qual serviço aéreo contratar?', desc:'Um cargueiro pode ser dividido com outras cargas, ou fretado só pra você.', choice:true,
+          options:[
+            {label:'🛫 Voo cargueiro compartilhado (aguarda vaga)', go:'a2', day:1, risk:0},
+            {label:'💸 Fretar um jato exclusivo pra essa carga', go:'a2', day:0, risk:0},
+          ]},
+    a2:  {icon:'🛃', title:'Pouso e alfândega aérea', desc:'O Carnê ATA libera a carga sem taxação, já que ela volta para a Europa depois da corrida.', day:0, next:'n8'},
+
+    n8:  {icon:'🚚', title:'Transporte local até o autódromo', desc:'Como levar a carga do terminal até o circuito?', choice:true,
+          options:[
+            {label:'✅ Frota local pré-contratada com antecedência', go:'n9', day:1, risk:0},
+            {label:'🎲 Frete de última hora, pra economizar', go:'n9', day:0, risk:1},
+          ]},
+
+    n9:  {icon:'🏗️', title:'Montagem da estrutura', desc:'Como organizar a equipe que monta o box?', choice:true,
+          options:[
+            {label:'👷 Equipe de avanço completa, chega dias antes', go:'n10', day:1, risk:0},
+            {label:'🏃 Equipe enxuta, monta tudo às pressas', go:'n10', day:0, risk:1},
+          ]},
+
+    n10: {icon:'🔩', title:'Remontagem final e testes', desc:'Antes da pista, como fechar essa etapa?', choice:true,
+          options:[
+            {label:'🔬 Remontar com calma e testar toda a telemetria', go:'n11', day:1, risk:0},
+            {label:'⚡ Pular parte dos testes pra ganhar tempo', go:'n11', day:0, risk:1},
+          ]},
+
+    n11: {icon:'🏁', title:'Largada — a próxima corrida começa', desc:'', day:0, end:true},
+  };
+  const TRAIL_DEADLINE = 6;
+  let trailCurrent = 'n0';
+  let trailDays = 0;
+  let trailRisk = 0;
+  let trailRoute = null;
+
+  function trailRenderDots(){
+    const seqCommonStart = ['n0','n1','n2','n3'];
+    const seqMar = ['m1','m2'];
+    const seqAr = ['a1','a2'];
+    const seqEnd = ['n8','n9','n10','n11'];
+    const branch = trailRoute === 'mar' ? seqMar : seqAr; // default preview uses ar length (same count)
+    const fullSeq = [...seqCommonStart, ...branch, ...seqEnd];
+    document.getElementById('trail-total').textContent = fullSeq.length;
+    const idx = fullSeq.indexOf(trailCurrent);
+    const dotsEl = document.getElementById('trail-dots');
+    dotsEl.innerHTML = '';
+    fullSeq.forEach((id, i)=>{
+      const d = document.createElement('div');
+      d.className = 'trail-dot' + (i < idx ? ' done' : '') + (i === idx ? ' current' : '');
+      dotsEl.appendChild(d);
+    });
+    document.getElementById('trail-step').textContent = Math.min(idx+1, fullSeq.length);
+    document.getElementById('trail-fill').style.width = Math.round(((idx+1)/fullSeq.length)*100) + '%';
+  }
+
+  function trailStart(){
+    trailCurrent = 'n0';
+    trailDays = 0;
+    trailRisk = 0;
+    trailRoute = null;
+    document.getElementById('trail-route').textContent = '— ';
+    document.getElementById('trail-risk').textContent = '0';
+    document.getElementById('trail-days').textContent = '0';
+    document.getElementById('trail-end-box').classList.add('hidden');
+    document.getElementById('trail-live').classList.remove('hidden');
+    trailShowNode('n0');
+  }
+
+  function trailShowNode(id){
+    trailCurrent = id;
+    const node = trailNodes[id];
+
+    document.getElementById('trail-icon').textContent = node.icon;
+    document.getElementById('trail-title').textContent = node.title;
+    document.getElementById('trail-desc').textContent = node.desc;
+    document.getElementById('trail-daytag').textContent = (!node.choice && node.day > 0) ? ('+' + node.day + (node.day===1?' dia':' dias')) : '';
+
+    const card = document.getElementById('trail-card');
+    card.style.animation = 'none'; void card.offsetWidth; card.style.animation = 'crateIn .3s ease';
+
+    const actions = document.getElementById('trail-actions');
+    actions.innerHTML = '';
+
+    if(node.choice){
+      node.options.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'game-btn';
+        btn.innerHTML = opt.label + '<span style="opacity:0.6; font-size:0.7rem; margin-left:4px;">' +
+          (opt.day ? ('+'+opt.day+'d ') : '') + (opt.risk ? '⚠️' : '') + '</span>';
+        btn.onclick = ()=> trailChoose(opt);
+        actions.appendChild(btn);
+      });
+    } else if(node.end){
+      trailFinish();
+      return;
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'info-btn';
+      btn.textContent = 'Avançar →';
+      btn.onclick = ()=> trailAdvance(node.next);
+      actions.appendChild(btn);
+    }
+
+    trailRenderDots();
+  }
+
+  function trailChoose(opt){
+    trailDays += opt.day || 0;
+    trailRisk += opt.risk || 0;
+    if(opt.route){
+      trailRoute = opt.route;
+      document.getElementById('trail-route').innerHTML = opt.route === 'mar' ? '🚢 Marítima' : '✈️ Aérea';
+    }
+    document.getElementById('trail-days').textContent = trailDays;
+    document.getElementById('trail-risk').textContent = trailRisk;
+
+    if(opt.route){
+      playRouteAnimation(opt.route, ()=> trailShowNode(opt.go));
+    } else {
+      trailShowNode(opt.go);
+    }
+  }
+
+  function playRouteAnimation(route, onDone){
+    const overlay = document.getElementById('trail-map-overlay');
+    const canvas = document.getElementById('map-canvas');
+    const truck = document.getElementById('map-truck');
+    const trail = document.getElementById('map-trail');
+    const plane = document.getElementById('map-plane');
+    const boat = document.getElementById('map-boat');
+    const endMarker = document.getElementById('map-end-marker');
+    const caption = document.getElementById('map-caption');
+
+    // reset all animation state
+    canvas.classList.remove('animate');
+    truck.className = 'map-truck';
+    trail.className = 'map-trail';
+    plane.className = 'map-plane';
+    boat.className = 'map-boat';
+
+    if(route === 'mar'){
+      endMarker.innerHTML = '⚓<span>Porto</span>';
+      caption.innerHTML = 'Rumo ao <b>porto</b>...';
+    } else {
+      endMarker.innerHTML = '✈️<span>Aeroporto</span>';
+      caption.innerHTML = 'Rumo ao <b>aeroporto</b>...';
+    }
+
+    overlay.classList.add('show');
+    void truck.offsetWidth;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced){
+      setTimeout(()=>{ overlay.classList.remove('show'); onDone(); }, 350);
+      return;
+    }
+
+    canvas.classList.add('animate');
+    truck.classList.add('moving');
+    trail.classList.add('animate');
+
+    const DRIVE_MS = 1600, DEPART_MS = 1300, BUFFER_MS = 150;
+
+    setTimeout(()=>{
+      truck.classList.add('arrived');
+      caption.innerHTML = route === 'mar'
+        ? 'Zarpando rumo ao próximo continente...'
+        : 'Decolando rumo ao próximo continente...';
+      if(route === 'mar'){ boat.classList.add('depart'); }
+      else { plane.classList.add('depart'); }
+    }, DRIVE_MS);
+
+    setTimeout(()=>{
+      overlay.classList.remove('show');
+      onDone();
+    }, DRIVE_MS + DEPART_MS + BUFFER_MS);
+  }
+
+  function trailAdvance(nextId){
+    const node = trailNodes[trailCurrent];
+    trailDays += node.day || 0;
+    document.getElementById('trail-days').textContent = trailDays;
+    trailShowNode(nextId);
+  }
+
+  function trailFinish(){
+    document.getElementById('trail-live').classList.add('hidden');
+    const box = document.getElementById('trail-end-box');
+    box.classList.remove('hidden');
+
+    const onTime = trailDays <= TRAIL_DEADLINE;
+    const iconEl = document.getElementById('trail-result-icon');
+    const titleEl = document.getElementById('trail-result-title');
+    const textEl = document.getElementById('trail-result-text');
+    const base = 'A carga levou ' + trailDays + ' dia' + (trailDays===1?'':'s') + ' pela rota ' +
+      (trailRoute==='mar' ? 'marítima 🚢' : 'aérea ✈️') + ', com ' + trailRisk + ' escolha' + (trailRisk===1?'':'s') +
+      ' arriscada' + (trailRisk===1?'':'s') + ' no caminho. O prazo até a próxima corrida é de ' + TRAIL_DEADLINE + ' dias.';
+
+    let cls, icon, title, msg, color;
+
+    if(trailRoute === 'mar'){
+      cls = 'fail'; icon = '⏰'; title = 'Não foi a rota ideal'; color = '';
+      msg = base + ' É por isso que, na F1 de verdade, o navio só é usado para itens que não têm pressa — mobília e estruturas que já saem navegando meses antes, nunca o carro ou peças críticas entre corridas próximas.';
+    } else if(!onTime){
+      cls = 'fail'; icon = '⏰'; title = 'Chegou atrasado'; color = '';
+      msg = base + ' Mesmo de avião, os atrasos acumulados nos outros passos custaram caro demais.';
+    } else if(trailRisk === 0){
+      cls = 'ok'; icon = '🏆'; title = 'Rota ideal!'; color = '';
+      msg = base + ' Você escolheu o avião e não cortou nenhum canto: embalagem cuidadosa, frota confiável, tudo testado com calma. É exatamente assim que a operação real consegue ser rápida e segura ao mesmo tempo.';
+    } else if(trailRisk <= 2){
+      cls = ''; icon = '⚠️'; title = 'Boa rota, mas não perfeita'; color = '#E8B34A';
+      msg = base + ' Você chegou a tempo, mas cortou caminho em pontos que normalmente pedem mais cuidado — na vida real, isso é o tipo de atalho que pode gerar uma peça danificada ou um imprevisto na alfândega.';
+    } else {
+      cls = ''; icon = '⚠️'; title = 'Chegou a tempo, mas por pouco'; color = '#E8B34A';
+      msg = base + ' Muitos atalhos arriscados de uma vez só — chegou dentro do prazo, mas essa não seria uma operação confiável de verdade. Equipes de F1 raramente arriscam tanto.';
+    }
+
+    box.className = 'trail-end' + (cls ? ' ' + cls : '');
+    iconEl.textContent = icon;
+    titleEl.textContent = title;
+    titleEl.style.color = color || '';
+    textEl.textContent = msg;
+
+    // salva pra recordes / certificado
+    localStorage.setItem('triup-played-trilha', 'true');
+    localStorage.setItem('triup-trail-last-days', trailDays);
+    localStorage.setItem('triup-trail-last-risk', trailRisk);
+    localStorage.setItem('triup-trail-last-route', trailRoute);
+    const wasIdeal = (trailRoute === 'ar' && onTime && trailRisk === 0);
+    if(wasIdeal) localStorage.setItem('triup-trail-ideal', 'true');
+    updateRecordsBar();
+  }
+
+  // ---------- Modo de animação reduzida ----------
+  function toggleMotion(){
+    const active = document.body.classList.toggle('reduced-motion');
+    localStorage.setItem('triup-reduced-motion', active ? '1' : '0');
+    document.getElementById('motion-toggle').classList.toggle('active', active);
+  }
+  (function initMotionPref(){
+    if(localStorage.getItem('triup-reduced-motion') === '1'){
+      document.addEventListener('DOMContentLoaded', ()=>{
+        document.body.classList.add('reduced-motion');
+        const btn = document.getElementById('motion-toggle');
+        if(btn) btn.classList.add('active');
+      });
+    }
+  })();
+
+  // ---------- Compartilhar seção ----------
+  function shareSection(id){
+    const url = window.location.href.split('#')[0] + '#' + id;
+    const toast = document.getElementById('share-toast');
+    const show = (msg)=>{ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(()=> show('🔗 Link copiado!')).catch(()=> show(url));
+    } else {
+      show(url);
+    }
+  }
+
+  // ---------- Calculadora de pegada de carbono ----------
+  const CARBON_FACTORS = { mar: 15, truck: 62, ar: 500 }; // g CO2 por tonelada-km (valores de referência ilustrativos)
+  function calcCarbon(){
+    const dist = parseFloat(document.getElementById('carbon-distance').value) || 0;
+    const results = {};
+    Object.keys(CARBON_FACTORS).forEach(mode=>{
+      results[mode] = (dist * CARBON_FACTORS[mode]) / 1000; // kg CO2
+    });
+    const maxVal = Math.max(results.mar, results.truck, results.ar, 1);
+    Object.keys(results).forEach(mode=>{
+      const pct = Math.max(4, Math.round((results[mode]/maxVal)*100));
+      document.getElementById('carbon-bar-'+mode).style.width = pct + '%';
+      const kg = results[mode];
+      const display = kg >= 1000 ? (kg/1000).toFixed(1)+' t' : Math.round(kg)+' kg';
+      document.getElementById('carbon-val-'+mode).textContent = display + ' CO₂';
+    });
+  }
+
+  // ---------- Recordes ----------
+  function updateRecordsBar(){
+    const bar = document.getElementById('records-bar');
+    if(!bar) return;
+    const bestScore = localStorage.getItem('triup-despachante-best');
+    const trailDaysBest = localStorage.getItem('triup-trail-last-days');
+    const trailRiskBest = localStorage.getItem('triup-trail-last-risk');
+    let parts = [];
+    parts.push('🚚 Despachante: ' + (bestScore ? '<b>'+bestScore+' pts</b>' : 'ainda não jogado'));
+    parts.push('🧭 Trilha: ' + (trailDaysBest !== null ? '<b>'+trailDaysBest+' dias, '+trailRiskBest+' riscos</b> (última rota)' : 'ainda não jogada'));
+    bar.innerHTML = parts.join(' &nbsp;·&nbsp; ');
+  }
+
+  // ---------- Certificado ----------
+  function openCert(){
+    const played1 = localStorage.getItem('triup-played-despachante') === 'true' || localStorage.getItem('triup-despachante-best') !== null;
+    const played2 = localStorage.getItem('triup-played-trilha') === 'true';
+    const box = document.getElementById('cert-box');
+    const eyebrow = document.getElementById('cert-eyebrow');
+    const title = document.getElementById('cert-title');
+    const sub = document.getElementById('cert-sub');
+    const stats = document.getElementById('cert-stats');
+
+    if(played1 && played2){
+      const score = localStorage.getItem('triup-despachante-best') || '0';
+      const days = localStorage.getItem('triup-trail-last-days') || '—';
+      const risk = localStorage.getItem('triup-trail-last-risk') || '—';
+      const ideal = localStorage.getItem('triup-trail-ideal') === 'true';
+      eyebrow.textContent = 'Certificado de conclusão';
+      title.textContent = ideal ? 'Despachante Nível Ouro 🏆' : 'Despachante de F1';
+      sub.textContent = 'Concluiu os dois desafios de logística do site TriUp.';
+      stats.innerHTML = `
+        <div><b>${score}</b>pontos no Despachante</div>
+        <div><b>${days}</b>dias na última trilha</div>
+        <div><b>${risk}</b>riscos assumidos</div>
+      `;
+    } else {
+      eyebrow.textContent = 'Ainda não desbloqueado';
+      title.textContent = 'Despachante em treinamento';
+      sub.textContent = 'Jogue o "Despachante por um dia" e complete a "Trilha da logística" pra desbloquear o certificado completo.';
+      stats.innerHTML = `
+        <div>${played1 ? '✅' : '⏳'}<br>Despachante</div>
+        <div>${played2 ? '✅' : '⏳'}<br>Trilha</div>
+      `;
+    }
+    document.getElementById('cert-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCert(){
+    document.getElementById('cert-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    updateRecordsBar();
+    calcCarbon();
+  });
+</script>
+
+<div class="share-toast" id="share-toast"></div>
+
+</body>
+</html>
